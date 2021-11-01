@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply relative;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.btn-primary {
+  @apply inline-block px-5 py-3 text-sm font-semibold text-white bg-teal-700;
+}
+
+.btn-primary:hover {
+  @apply bg-teal-800 text-white no-underline;
+}
+
+.input-label {
+  @apply mb-2 text-sm font-bold tracking-wide text-gray-700;
+}
+
+.input-field {
+  @apply w-full text-gray-700 border border-gray-400 rounded hover:border-gray-500;
+}
+
+.form-validation-error {
+  @apply text-red-600;
+}
+
+.btn-spotify {
+  color: #fff;
+  background-color: #1db954;
+  border-color: #4cae4c;
+  display: inline-block;
+  font-weight: 400;
+  line-height: 1.428571429;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 21px;
+  padding: 14px 24px;
+}
+
+.btn-spotify:hover {
+  background-color: #1ed760;
+}
+
+.gradient-bg {
+  background: radial-gradient(
+    circle,
+    rgba(41, 65, 171, 0.75) 0%,
+    rgba(37, 114, 188, 0.75) 33.78%,
+    rgba(30, 215, 96, 0.75) 100%
+  );
+}
+
+.img-bg {
+  background-image: url('crowd-at-concert.jpg');
+  background-size: cover;
+  background-position: center;
+}
