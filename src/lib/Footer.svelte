@@ -1,7 +1,7 @@
 <script>
-  import Icon from 'svelte-awesome';
-  import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
   import { faGithub } from '@fortawesome/free-brands-svg-icons';
+  import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+  import Icon from 'svelte-awesome';
 </script>
 
 <footer class="w-full bg-black">

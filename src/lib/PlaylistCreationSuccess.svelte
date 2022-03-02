@@ -1,6 +1,15 @@
 <script lang="ts">
   import { getContext } from 'svelte';
-  const { close } = getContext('simple-modal');
+
+  type ContextProps = {
+    close: (
+      callbacks: MouseEvent & {
+        currentTarget: EventTarget & HTMLButtonElement;
+      },
+    ) => void;
+  };
+
+  const { close } = getContext<ContextProps>('simple-modal');
 
   export let playlistId: string;
 </script>

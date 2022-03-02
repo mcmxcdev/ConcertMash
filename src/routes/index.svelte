@@ -1,6 +1,7 @@
 <script>
   import LoginWithSpotify from '$lib/LoginWithSpotify.svelte';
   import PlaylistCreationForm from '$lib/PlaylistCreationForm.svelte';
+
   import { storedToken } from '../stores';
 </script>
 

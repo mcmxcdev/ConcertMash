@@ -1,28 +1,27 @@
 <script lang="ts">
+  import { notifier } from '@beyonk/svelte-notifications';
+  import pLimit from 'p-limit';
+  import { createForm } from 'svelte-forms-lib';
   import Select from 'svelte-select';
+  import Modal from 'svelte-simple-modal';
+  import * as yup from 'yup';
+
   import {
-    createPlaylist,
-    getArtistAlbums,
-    addTracksToPlaylist,
-    searchArtists,
-    getAlbumTracks,
     addCustomPlaylistCoverImage,
+    addTracksToPlaylist,
+    createPlaylist,
+    getAlbumTracks,
+    getArtistAlbums,
     getArtistTopTracks,
+    searchArtists,
   } from '../api';
   import { storedUser } from '../stores';
-
-  import ModalContent from './ModalContent.svelte';
-  import Modal from 'svelte-simple-modal';
-
-  import { createForm } from 'svelte-forms-lib';
-  import * as yup from 'yup';
-  import { notifier } from '@beyonk/svelte-notifications';
   import ImageUpload from './ImageUpload.svelte';
-  import pLimit from 'p-limit';
+  import ModalContent from './ModalContent.svelte';
 
   type Artist = { id: string; label: string; value: string };
 
-  const limit = pLimit(1);
+  var limit = pLimit(1);
 
   let playlistId = '';
   let playlistImage = '';
@@ -84,15 +83,16 @@
     artistIds: string[],
     albumType: string,
   ) => {
-    const throttledArtistAlbumRequests: any = [];
+    const throttledArtistAlbumRequests: Promise<string[]>[] = [];
     artistIds.map((artistId) => {
       throttledArtistAlbumRequests.push(
         limit(() => fetchArtistAlbumsPaginated(artistId, albumType)),
       );
     });
+
     await Promise.all(throttledArtistAlbumRequests);
 
-    const throttledAlbumTracksRequests: any = [];
+    const throttledAlbumTracksRequests: Promise<string[]>[] = [];
     allAlbumUris.map((albumUri) => {
       throttledAlbumTracksRequests.push(
         limit(() => fetchAlbumTracksPaginated(albumUri)),
@@ -102,7 +102,8 @@
   };
 
   const fetchArtistTop10Songs = async (artistIds: string[]) => {
-    const throttledArtistTopTracksRequests: any = [];
+    const throttledArtistTopTracksRequests: Promise<SpotifyApi.ArtistsTopTracksResponse>[] =
+      [];
     artistIds.map((artistId) => {
       throttledArtistTopTracksRequests.push(
         limit(() => getArtistTopTracks(artistId)),
@@ -140,11 +141,9 @@
 
         const artistIds = values.artists.map((artist: Artist) => artist.id);
 
-        if (values.songsPerArtist === 'all') {
-          await fetchAllArtistSongs(artistIds, values.albumType);
-        } else {
-          await fetchArtistTop10Songs(artistIds);
-        }
+        await (values.songsPerArtist === 'all'
+          ? fetchAllArtistSongs(artistIds, values.albumType)
+          : fetchArtistTop10Songs(artistIds));
 
         const batchedTrackUris = [];
         const maxTracksPerRequestAllowed = 100;
@@ -157,7 +156,8 @@
           );
         }
 
-        const throttledAddTracksToPlaylistRequests: any = [];
+        const throttledAddTracksToPlaylistRequests: Promise<SpotifyApi.AddTracksToPlaylistResponse>[] =
+          [];
 
         batchedTrackUris.map((trackUris) =>
           throttledAddTracksToPlaylistRequests.push(
@@ -224,17 +224,20 @@
         .min(1, 'Artists is a required field.')
         .typeError('Artists is a required field.'),
     }),
-    onSubmit: (values) => {
-      handlePlaylistCreation(values);
+    onSubmit: async (values) => {
+      await handlePlaylistCreation(values);
     },
   });
 
-  const handleSelect = (event: CustomEvent) => {
+  const handleSelect = async (
+    event: Event & { detail: { id: string; label: string; value: string } },
+  ) => {
     // Open issue for $errors not updating without handleChange
     // See: https://github.com/tjinauyeung/svelte-forms-lib/issues/110
+    // @ts-expect-error Type '{ id: string; label: string; value: string; }' is missing the following properties from type 'never[]': length, pop, push, concat, and 29 more.
     form.set({ ...$form, artists: event.detail });
     errors.set({ ...$errors, artists: '' });
-    validateField('artists');
+    await validateField('artists');
   };
 </script>
 
