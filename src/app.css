@@ -58,7 +58,7 @@ body {
 }
 
 .img-bg {
-  background-image: url('crowd-at-concert.jpg');
+  background-image: url('/crowd-at-concert.jpg');
   background-size: cover;
   background-position: center;
 }

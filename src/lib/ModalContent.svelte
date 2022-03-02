@@ -1,8 +1,17 @@
 <script lang="ts">
-  import { getContext } from 'svelte';
+  import { getContext, SvelteComponent } from 'svelte';
+
   import PlaylistCreationSuccess from './PlaylistCreationSuccess.svelte';
 
-  const { open, close } = getContext('simple-modal');
+  type ContextProps = {
+    open: (
+      Component: typeof SvelteComponent,
+      props: Record<string, string>,
+    ) => void;
+    close: (callbacks?: Record<string, string>) => void;
+  };
+
+  const { open, close } = getContext<ContextProps>('simple-modal');
 
   export let playlistId: string;
   export let isGenerationDone: boolean;

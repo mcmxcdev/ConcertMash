@@ -1,12 +1,14 @@
 <script lang="ts">
+  import { faMusic } from '@fortawesome/free-solid-svg-icons';
+  import SpotifyApi from 'spotify-web-api-js';
   import { onMount } from 'svelte';
+  import Icon from 'svelte-awesome';
+
+  import { goto } from '$app/navigation';
+
   import { getMe } from '../api';
   import { storedToken, storedUser } from '../stores';
-  import SpotifyApi from 'spotify-web-api-js';
   import SpotifyButton from './SpotifyButton.svelte';
-  import { faMusic } from '@fortawesome/free-solid-svg-icons';
-  import Icon from 'svelte-awesome';
-  import { goto } from '$app/navigation';
 
   const spotifyApi = new SpotifyApi();
   const authEndpoint = 'https://accounts.spotify.com/authorize';
@@ -34,13 +36,24 @@
     } = window.location.hash
       .slice(1)
       .split('&')
-      .reduce(function (initial: any, item) {
-        if (item) {
-          var parts = item.split('=');
-          initial[parts[0]] = decodeURIComponent(parts[1]);
-        }
-        return initial;
-      }, {});
+      .reduce(
+        function (
+          initial: {
+            access_token: string;
+            expires_in: string;
+            token_type: string;
+          },
+          item,
+        ) {
+          if (item) {
+            var parts = item.split('=');
+            // @ts-expect-error Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ access_token: string; expires_in: string; token_type: string; }'.
+            initial[parts[0]] = decodeURIComponent(parts[1]);
+          }
+          return initial;
+        },
+        { access_token: '', expires_in: '', token_type: '' },
+      );
 
     storedToken.set(hashFromURL.access_token);
     spotifyApi.setAccessToken($storedToken);
@@ -50,10 +63,10 @@
     try {
       const response = await getMe();
       storedUser.set(response);
-    } catch (error) {
+    } catch {
       storedToken.set(null);
       storedUser.set(undefined);
-      goto('/');
+      await goto('/');
     }
   };
 
@@ -61,7 +74,7 @@
     setAccessToken();
 
     if ($storedToken) {
-      getUserInformation();
+      void getUserInformation();
     }
   });
 </script>

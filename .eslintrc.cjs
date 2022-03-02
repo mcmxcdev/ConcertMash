@@ -3,13 +3,23 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   extends: [
     'eslint:recommended',
-    'plugin:import/typescript',
+    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:import/typescript',
     'plugin:unicorn/recommended',
     'plugin:promise/recommended',
     'prettier',
   ],
-  plugins: ['svelte3', '@typescript-eslint', 'unicorn', 'promise'],
+  plugins: [
+    'svelte3',
+    '@typescript-eslint',
+    'simple-import-sort',
+    'import',
+    'unicorn',
+    'promise',
+    'prettier',
+  ],
   ignorePatterns: ['*.cjs'],
   overrides: [{ files: ['*.svelte'], processor: 'svelte3/svelte3' }],
   settings: {
@@ -18,17 +28,37 @@ module.exports = {
   parserOptions: {
     sourceType: 'module',
     ecmaVersion: 2019,
+    project: ['./tsconfig.json'],
+    extraFileExtensions: ['.svelte'],
   },
   env: {
     browser: true,
     es2017: true,
     node: true,
   },
+  globals: {
+    SpotifyApi: 'readonly',
+  },
   rules: {
+    //
+    // eslint
+    //
+    eqeqeq: 'error',
+    "no-console": ["error", { allow: ["warn", "error", "info"] }],
     //
     // @typescript-eslint
     //
     '@typescript-eslint/no-explicit-any': 'off',
+    //
+    // eslint-plugin-import
+    //
+    'import/newline-after-import': 'error',
+    'import/no-duplicates': 'error',
+    //
+    // eslint-plugin-simple-import-sort
+    //
+    'simple-import-sort/exports': 'error',
+    'simple-import-sort/imports': 'error',
     //
     // eslint-plugin-unicorn
     //

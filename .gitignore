@@ -3,6 +3,4 @@
 /build
 /.svelte-kit
 /package
-.env
 .pnpm-debug.log
-/static/global.css
