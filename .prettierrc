@@ -1,8 +1,0 @@
-{
-  "singleQuote": true,
-  "trailingComma": "all",
-  "svelteAllowShorthand": true,
-  "plugins": [
-    "prettier-plugin-svelte"
-  ]
-}

@@ -6,6 +6,8 @@
   import Modal from 'svelte-simple-modal';
   import * as yup from 'yup';
 
+  import { goto } from '$app/navigation';
+
   import {
     addCustomPlaylistCoverImage,
     addTracksToPlaylist,
@@ -18,6 +20,7 @@
   import { storedUser } from '../stores';
   import ImageUpload from './ImageUpload.svelte';
   import ModalContent from './ModalContent.svelte';
+  import RandomFactsOverlay from './RandomFactsOverlay.svelte';
 
   type Artist = { id: string; label: string; value: string };
 
@@ -28,6 +31,7 @@
   let allAlbumUris: string[] = [];
   let allTrackUris: string[] = [];
   let isGenerationDone = false;
+  let playlistCreationPending = false;
 
   const handleSearchArtist = async (filterText: string) => {
     const response = await searchArtists(filterText);
@@ -125,55 +129,66 @@
     playlistDescription: string;
     songsPerArtist: string;
     playlistVisibility: string;
-    artists: Artist[];
+    artists: Artist[] | undefined;
     albumType: string;
   }) => {
-    if ($storedUser) {
-      try {
-        const createdPlaylist = await createPlaylist($storedUser, values);
-        if (createdPlaylist) {
-          playlistId = createdPlaylist.id;
-        }
+    try {
+      playlistCreationPending = true;
 
-        if (playlistImage && createdPlaylist) {
-          await addCustomPlaylistCoverImage(playlistId, playlistImage);
-        }
+      const artistIds = (values.artists || []).map(
+        (artist: Artist) => artist.id,
+      );
 
-        const artistIds = values.artists.map((artist: Artist) => artist.id);
+      await (values.songsPerArtist === 'all'
+        ? fetchAllArtistSongs(artistIds, values.albumType)
+        : fetchArtistTop10Songs(artistIds));
 
-        await (values.songsPerArtist === 'all'
-          ? fetchAllArtistSongs(artistIds, values.albumType)
-          : fetchArtistTop10Songs(artistIds));
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const createdPlaylist = await createPlaylist($storedUser!, values);
+      if (createdPlaylist) {
+        playlistId = createdPlaylist.id;
+      }
 
-        const batchedTrackUris = [];
-        const maxTracksPerRequestAllowed = 100;
+      if (playlistImage && createdPlaylist) {
+        await addCustomPlaylistCoverImage(playlistId, playlistImage);
+      }
 
-        // Since the Spotify API can only handle 100 track URIs at a time,
-        // we split up allTrackUris into size-limited arrays
-        while (allTrackUris.length > 0) {
-          batchedTrackUris.push(
-            allTrackUris.splice(0, maxTracksPerRequestAllowed),
-          );
-        }
+      const batchedTrackUris = [];
+      const maxTracksPerRequestAllowed = 100;
 
-        const throttledAddTracksToPlaylistRequests: Promise<SpotifyApi.AddTracksToPlaylistResponse>[] =
-          [];
-
-        batchedTrackUris.map((trackUris) =>
-          throttledAddTracksToPlaylistRequests.push(
-            limit(() => addTracksToPlaylist(playlistId, trackUris)),
-          ),
+      // Since the Spotify API can only handle 100 track URIs at a time,
+      // we split up allTrackUris into size-limited arrays
+      while (allTrackUris.length > 0) {
+        batchedTrackUris.push(
+          allTrackUris.splice(0, maxTracksPerRequestAllowed),
         );
-        await Promise.all(throttledAddTracksToPlaylistRequests);
+      }
 
-        handleReset();
-        playlistImage = '';
-        allAlbumUris = [];
-        allTrackUris = [];
-        isGenerationDone = true;
-      } catch (error) {
-        console.error(error);
-        notifier.danger("Couldn't create playlist.", 3000);
+      const throttledAddTracksToPlaylistRequests: Promise<SpotifyApi.AddTracksToPlaylistResponse>[] =
+        [];
+
+      batchedTrackUris.map((trackUris) =>
+        throttledAddTracksToPlaylistRequests.push(
+          limit(() => addTracksToPlaylist(playlistId, trackUris)),
+        ),
+      );
+      await Promise.all(throttledAddTracksToPlaylistRequests);
+
+      handleReset();
+      playlistImage = '';
+      allAlbumUris = [];
+      allTrackUris = [];
+      isGenerationDone = true;
+      playlistCreationPending = false;
+    } catch (error: any) {
+      console.error(error);
+
+      // Access token expired
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (error.response.status === 401) {
+        await goto('/');
+      } else {
+        notifier.danger("Couldn't create playlist. Please try again.", 3000);
       }
     }
   };
@@ -194,7 +209,7 @@
       playlistVisibility: 'private',
       songsPerArtist: 'top10',
       albumType: 'both',
-      artists: [],
+      artists: undefined,
     },
     validationSchema: yup.object().shape({
       playlistTitle: yup
@@ -245,22 +260,26 @@
   <title>Playlist Info | ConcertMash</title>
 </svelte:head>
 
+{#if playlistCreationPending}
+  <RandomFactsOverlay />
+{/if}
+
 <section class="img-bg">
   <div class="gradient-bg">
-    <div class="py-10 container mx-auto">
-      <div class="p-12 bg-white rounded-md">
+    <div class="container mx-auto px-3 py-10">
+      <div class="rounded-md bg-white px-4 py-8 md:p-12">
         <form method="post" on:submit={handleSubmit} name="playlistCreation">
-          <h2 class="text-3xl font-bold mb-10">Playlist Info</h2>
+          <h2 class="mb-10 text-3xl font-bold">Playlist Info</h2>
 
           <div class="grid grid-cols-3 gap-8">
-            <div class="row-span-5 col-span-3 md:col-span-1">
+            <div class="col-span-3 row-span-5 md:col-span-1">
               <label for="playlistImage" class="input-label"
-                >Playlist Image (optional)</label
+                >Playlist image</label
               >
               <ImageUpload bind:playlistImage />
             </div>
             <div class="col-span-3 md:col-span-2">
-              <label for="playlistTitle" class="input-label"
+              <label for="playlistTitle" class="input-label field-required"
                 >Playlist title</label
               >
               <input
@@ -302,20 +321,20 @@
             </div>
 
             <div class="col-span-3 md:col-span-2">
-              <label for="songsPerArtist" class="block input-label mb-0">
-                Songs per artist
-              </label>
-              <label class="mr-3">
-                <input
-                  type="radio"
-                  name="songsPerArtist"
-                  value="all"
-                  on:keyup={handleChange}
-                  bind:group={$form.songsPerArtist}
-                />
-                All
-              </label>
-              <label>
+              <div class="input-label field-required">Songs per artist</div>
+              {#if $form.songsPerArtist === 'all'}
+                <div
+                  class="relative mb-3 rounded border border-gray-400 bg-gray-100 px-2 py-1 text-gray-700"
+                  role="alert"
+                >
+                  <span class="block text-xs sm:inline"
+                    ><span class="font-bold">Note: </span> The playlist generation
+                    can fail with "All" mode for artists with lots of albums or compilations.
+                    This is due to request limitations with the Spotify API.</span
+                  >
+                </div>
+              {/if}
+              <label class="my-3 mr-3 block md:my-0 md:inline">
                 <input
                   type="radio"
                   name="songsPerArtist"
@@ -325,23 +344,57 @@
                 />
                 Top 10
               </label>
-            </div>
-
-            <div class="col-span-3 md:col-span-2">
-              <label for="playlistVisibility" class="block input-label mb-0">
-                Playlist visibility
-              </label>
-              <label class="mr-3">
+              <label class="my-3 mr-3 block md:my-0 md:inline">
                 <input
                   type="radio"
-                  name="playlistVisibility"
-                  value="public"
+                  name="songsPerArtist"
+                  value="all"
                   on:keyup={handleChange}
-                  bind:group={$form.playlistVisibility}
+                  bind:group={$form.songsPerArtist}
                 />
-                Public
+                All
               </label>
-              <label>
+            </div>
+
+            {#if $form.songsPerArtist === 'all'}
+              <div class="col-span-3 md:col-span-2">
+                <div class="input-label field-required">Album type</div>
+                <label class="my-3 mr-3 block md:my-0 md:inline">
+                  <input
+                    type="radio"
+                    name="albumType"
+                    value="both"
+                    on:keyup={handleChange}
+                    bind:group={$form.albumType}
+                  />
+                  Both</label
+                >
+                <label class="my-3 mr-3 block md:my-0 md:inline">
+                  <input
+                    type="radio"
+                    name="albumType"
+                    value="single"
+                    on:keyup={handleChange}
+                    bind:group={$form.albumType}
+                  />
+                  Singles and EPs
+                </label>
+                <label class="my-3 mr-3 block md:my-0 md:inline">
+                  <input
+                    type="radio"
+                    name="albumType"
+                    value="album"
+                    on:keyup={handleChange}
+                    bind:group={$form.albumType}
+                  />
+                  Albums</label
+                >
+              </div>
+            {/if}
+
+            <div class="col-span-3 md:col-span-2">
+              <div class="input-label field-required">Playlist visibility</div>
+              <label class="my-3 mr-3 block md:my-0 md:inline">
                 <input
                   type="radio"
                   name="playlistVisibility"
@@ -351,46 +404,22 @@
                 />
                 Private</label
               >
-            </div>
-
-            <div class="col-span-3 md:col-span-2">
-              <label for="albumType" class="block input-label mb-0">
-                Album type
+              <label class="my-3 mr-3 block md:my-0 md:inline">
+                <input
+                  type="radio"
+                  name="playlistVisibility"
+                  value="public"
+                  on:keyup={handleChange}
+                  bind:group={$form.playlistVisibility}
+                />
+                Public
               </label>
-              <label class="mr-3">
-                <input
-                  type="radio"
-                  name="albumType"
-                  value="single"
-                  on:keyup={handleChange}
-                  bind:group={$form.albumType}
-                />
-                Singles and EPs
-              </label>
-              <label class="mr-3">
-                <input
-                  type="radio"
-                  name="albumType"
-                  value="album"
-                  on:keyup={handleChange}
-                  bind:group={$form.albumType}
-                />
-                Albums</label
-              >
-              <label>
-                <input
-                  type="radio"
-                  name="albumType"
-                  value="both"
-                  on:keyup={handleChange}
-                  bind:group={$form.albumType}
-                />
-                Both</label
-              >
             </div>
 
             <div class="col-span-3">
-              <label for="artists" class="input-label">Artists</label>
+              <label for="artists" class="input-label field-required"
+                >Selected artists
+              </label>
               <Select
                 id="artists"
                 value={$form.artists}
@@ -408,7 +437,7 @@
             <div class="col-span-3 text-right">
               <button
                 type="submit"
-                class="btn-primary disabled:cursor-not-allowed disabled:opacity-50"
+                class="btn-spotify disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={!$isValid || $isSubmitting}
               >
                 Create new playlist
