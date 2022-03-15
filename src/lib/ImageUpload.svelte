@@ -41,8 +41,9 @@
   name="filepond"
   onaddfile={handleAddFile}
   credits={false}
-  maxFileSize="5MB"
+  maxFileSize="256KB"
   acceptedFileTypes={['image/jpeg']}
+  fileValidateTypeLabelExpectedTypes="Spotify API requires .jpeg"
 />
 
 <style global>

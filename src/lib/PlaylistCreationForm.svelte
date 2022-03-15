@@ -201,7 +201,6 @@
     handleChange,
     handleSubmit,
     handleReset,
-    validateField,
   } = createForm({
     initialValues: {
       playlistTitle: '',
@@ -235,16 +234,15 @@
             value: yup.string(),
           }),
         )
-        .strict()
-        .min(1, 'Artists is a required field.')
-        .typeError('Artists is a required field.'),
+        .typeError('Artists is a required field.')
+        .required('Artists is a required field.'),
     }),
     onSubmit: async (values) => {
       await handlePlaylistCreation(values);
     },
   });
 
-  const handleSelect = async (
+  const handleSelect = (
     event: Event & { detail: { id: string; label: string; value: string } },
   ) => {
     // Open issue for $errors not updating without handleChange
@@ -252,7 +250,6 @@
     // @ts-expect-error Type '{ id: string; label: string; value: string; }' is missing the following properties from type 'never[]': length, pop, push, concat, and 29 more.
     form.set({ ...$form, artists: event.detail });
     errors.set({ ...$errors, artists: '' });
-    await validateField('artists');
   };
 </script>
 
@@ -274,7 +271,9 @@
           <div class="grid grid-cols-3 gap-8">
             <div class="col-span-3 row-span-5 md:col-span-1">
               <label for="playlistImage" class="input-label"
-                >Playlist image</label
+                >Playlist image <span class="text-xs text-gray-400"
+                  >(jpeg, maximum 256kb)</span
+                ></label
               >
               <ImageUpload bind:playlistImage />
             </div>
