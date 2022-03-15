@@ -1,17 +1,18 @@
 {
   "name": "concertmash",
   "description": "Easily generate a playlist for your upcoming concerts based on selected artists!",
-  "version": "0.0.1",
-  "private": true,
+  "version": "1.0.0",
+  "author": "MCMXC",
+  "license": "MIT",
+  "homepage": "https://github.com/mcmxcdev/ConcertMash",
   "scripts": {
-    "clean": "rm -rf .svelte && rm -rf build",
+    "clean": "rm -rf .svelte-kit && rm -rf build",
     "dev": "svelte-kit dev",
     "validate": "svelte-check",
     "check:format": "prettier --write src/**/*{.svelte,.ts}",
     "check:types": "tsc --noEmit",
     "lint": "eslint src",
     "lint:fix": "pnpm lint -- --fix --report-unused-disable-directives",
-    "test:watch": "pnpm test -- --watch",
     "build": "svelte-kit build",
     "preview": "svelte-kit preview",
     "prepare": "husky install"
