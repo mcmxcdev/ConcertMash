@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#svelte {
+  @apply flex min-h-screen flex-col;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.input-label {
+  @apply mb-2 text-sm font-bold tracking-wide text-gray-700;
+}
+
+.input-field {
+  @apply w-full rounded border border-gray-400 text-gray-700 hover:border-gray-500;
+}
+
+.form-validation-error {
+  @apply text-red-600;
+}
+
+.btn-spotify {
+  @apply rounded bg-spotify-green py-4 px-6 text-xl text-white;
+}
+
+.btn-spotify:hover {
+  @apply bg-spotify-hover-green;
+}
+
+.gradient-bg {
+  background: radial-gradient(
+    circle,
+    rgba(41, 65, 171, 0.75) 0%,
+    rgba(37, 114, 188, 0.75) 33.78%,
+    rgba(30, 215, 96, 0.75) 100%
+  );
+}
+
+.img-bg {
+  background-image: url('/crowd-at-concert.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.field-required:after {
+  content: ' *';
+  @apply text-red-600;
+}
+
+.loader {
+  border-top-color: #1db954;
+  animation: spinner 1.5s linear infinite;
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
