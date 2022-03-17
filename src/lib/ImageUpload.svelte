@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { FilePond as IFilePond, registerPlugin } from 'filepond';
+  import { registerPlugin } from 'filepond';
   import FilePondPluginFileEncode from 'filepond-plugin-file-encode';
   import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
   import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
@@ -18,7 +18,7 @@
 
   export let playlistImage = '';
 
-  let pond: IFilePond;
+  let pond: any;
 
   function handleAddFile(err: any, fileItem: any) {
     if (err) {
@@ -31,6 +31,7 @@
 
   afterUpdate(() => {
     if (!playlistImage && pond) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       pond.removeFile();
     }
   });

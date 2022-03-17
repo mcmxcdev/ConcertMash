@@ -23,7 +23,7 @@ body {
 }
 
 .btn-spotify {
-  @apply rounded bg-spotify-green py-4 px-6 text-xl text-white;
+  @apply rounded bg-spotify-green py-4 px-6 text-xl text-white shadow-md;
 }
 
 .btn-spotify:hover {
@@ -62,4 +62,36 @@ body {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.green-dot {
+  width: 150px;
+  height: 150px;
+  left: -60px;
+  top: -60px;
+  @apply absolute -z-10 hidden rounded-full bg-spotify-hover-green md:block;
+}
+
+.blue-dot {
+  width: 100px;
+  height: 100px;
+  left: 30px;
+  top: -75px;
+  @apply absolute -z-10 hidden rounded-full bg-blue-500 md:block;
+}
+
+.green-dot-2 {
+  width: 150px;
+  height: 150px;
+  right: -60px;
+  bottom: -60px;
+  @apply absolute -z-10 hidden rounded-full bg-spotify-hover-green md:block;
+}
+
+.blue-dot-2 {
+  width: 100px;
+  height: 100px;
+  right: 30px;
+  bottom: -75px;
+  @apply absolute -z-10 hidden rounded-full bg-blue-500 md:block;
 }
