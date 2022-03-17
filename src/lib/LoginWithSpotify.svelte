@@ -17,7 +17,6 @@
   const scopes = [
     'playlist-modify-public',
     'playlist-modify-private',
-    'user-library-modify',
     'ugc-image-upload',
   ];
 
