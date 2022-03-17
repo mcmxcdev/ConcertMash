@@ -22,6 +22,7 @@ const config = {
         noExternal: ['@beyonk/svelte-notifications'],
       },
     },
+    prerender: { default: true },
   },
 };
 

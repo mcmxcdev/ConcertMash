@@ -34,12 +34,19 @@
   let playlistCreationPending = false;
 
   const handleSearchArtist = async (filterText: string) => {
+    if (!filterText) {
+      return [];
+    }
+
     const response = await searchArtists(filterText);
 
     const artistSelecton = (response?.artists.items || []).map((artist) => {
+      const artistGenre =
+        artist.genres.length > 0 ? ` | ${artist.genres[0]}` : '';
+
       return {
         id: artist.id,
-        label: artist.name,
+        label: artist.name + artistGenre,
         value: artist.name,
       };
     });
@@ -242,15 +249,17 @@
     },
   });
 
-  const handleSelect = (
-    event: Event & { detail: { id: string; label: string; value: string } },
-  ) => {
+  type DropdownSelection = { id: string; label: string; value: string };
+
+  const handleSelect = (event: Event & { detail: DropdownSelection }) => {
     // Open issue for $errors not updating without handleChange
     // See: https://github.com/tjinauyeung/svelte-forms-lib/issues/110
     // @ts-expect-error Type '{ id: string; label: string; value: string; }' is missing the following properties from type 'never[]': length, pop, push, concat, and 29 more.
     form.set({ ...$form, artists: event.detail });
     errors.set({ ...$errors, artists: '' });
   };
+
+  const getSelectionLabel = (option: DropdownSelection) => option.value;
 </script>
 
 <svelte:head>
@@ -423,6 +432,7 @@
                 id="artists"
                 value={$form.artists}
                 loadOptions={handleSearchArtist}
+                {getSelectionLabel}
                 on:select={handleSelect}
                 isMulti
                 hasError={$errors.artists.length > 0}

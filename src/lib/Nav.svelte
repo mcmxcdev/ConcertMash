@@ -1,4 +1,4 @@
-<header class="w-full bg-white">
+<header class="w-full border-b-4 border-spotify-green bg-white">
   <div class="container mx-auto px-3 py-3">
     <div class="flex justify-between">
       <a sveltekit:prefetch href="/" class="text-xl font-semibold">
