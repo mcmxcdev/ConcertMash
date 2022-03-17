@@ -188,6 +188,7 @@
       isGenerationDone = true;
       playlistCreationPending = false;
     } catch (error: any) {
+      playlistCreationPending = false;
       console.error(error);
 
       // Access token expired

@@ -15,6 +15,7 @@
   const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
   const redirectUri = import.meta.env.VITE_APP_BASE_URL;
   const scopes = [
+    'playlist-modify-public',
     'playlist-modify-private',
     'user-library-modify',
     'ugc-image-upload',
