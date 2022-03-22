@@ -67,9 +67,9 @@ body {
 .green-dot {
   width: 150px;
   height: 150px;
-  left: -60px;
-  top: -60px;
-  @apply absolute -z-10 hidden rounded-full bg-spotify-hover-green md:block;
+  left: -80px;
+  top: -80px;
+  @apply absolute block rounded-full bg-spotify-hover-green;
 }
 
 .blue-dot {
@@ -77,15 +77,15 @@ body {
   height: 100px;
   left: 30px;
   top: -75px;
-  @apply absolute -z-10 hidden rounded-full bg-blue-500 md:block;
+  @apply absolute block rounded-full bg-blue-500;
 }
 
 .green-dot-2 {
   width: 150px;
   height: 150px;
-  right: -60px;
-  bottom: -60px;
-  @apply absolute -z-10 hidden rounded-full bg-spotify-hover-green md:block;
+  right: -80px;
+  bottom: -80px;
+  @apply absolute block rounded-full bg-spotify-hover-green;
 }
 
 .blue-dot-2 {
@@ -93,5 +93,5 @@ body {
   height: 100px;
   right: 30px;
   bottom: -75px;
-  @apply absolute -z-10 hidden rounded-full bg-blue-500 md:block;
+  @apply absolute block rounded-full bg-blue-500;
 }

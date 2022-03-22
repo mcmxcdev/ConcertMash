@@ -263,10 +263,6 @@
   const getSelectionLabel = (option: DropdownSelection) => option.value;
 </script>
 
-<svelte:head>
-  <title>Playlist Info | ConcertMash</title>
-</svelte:head>
-
 {#if playlistCreationPending}
   <RandomFactsOverlay />
 {/if}
@@ -279,7 +275,7 @@
           <h2 class="mb-10 text-3xl font-bold">Playlist Info</h2>
 
           <div class="grid grid-cols-3 gap-8">
-            <div class="col-span-3 row-span-5 md:col-span-1">
+            <div class="col-span-3 row-span-5 lg:col-span-1">
               <label for="playlistImage" class="input-label"
                 >Playlist image <span class="text-xs text-gray-400"
                   >(jpeg, maximum 256kb)</span
@@ -287,7 +283,7 @@
               >
               <ImageUpload bind:playlistImage />
             </div>
-            <div class="col-span-3 md:col-span-2">
+            <div class="col-span-3 lg:col-span-2">
               <label for="playlistTitle" class="input-label field-required"
                 >Playlist title</label
               >
@@ -299,7 +295,7 @@
                 class:!border-red-600={$errors.playlistTitle}
                 on:keyup={handleChange}
                 bind:value={$form.playlistTitle}
-                placeholder="e.g. Coldplay Tour"
+                placeholder="Coldplay Tour"
               />
               {#if $errors.playlistTitle}
                 <small class="form-validation-error"
@@ -308,7 +304,7 @@
               {/if}
             </div>
 
-            <div class="col-span-3 md:col-span-2">
+            <div class="col-span-3 lg:col-span-2">
               <label for="playlistDescription" class="input-label"
                 >Playlist description</label
               >
@@ -320,7 +316,7 @@
                 class:!border-red-600={$errors.playlistDescription}
                 on:keyup={handleChange}
                 bind:value={$form.playlistDescription}
-                placeholder="e.g. Playlist for the Coldplay concert"
+                placeholder="Playlist for the Coldplay concert"
               />
               {#if $errors.playlistDescription}
                 <small class="form-validation-error"
@@ -329,7 +325,7 @@
               {/if}
             </div>
 
-            <div class="col-span-3 md:col-span-2">
+            <div class="col-span-3 lg:col-span-2">
               <div class="input-label field-required">Songs per artist</div>
               {#if $form.songsPerArtist === 'all'}
                 <div
@@ -343,7 +339,7 @@
                   >
                 </div>
               {/if}
-              <label class="my-3 mr-3 block md:my-0 md:inline">
+              <label class="my-3 mr-3 block lg:my-0 lg:inline">
                 <input
                   type="radio"
                   name="songsPerArtist"
@@ -353,7 +349,7 @@
                 />
                 Top 10
               </label>
-              <label class="my-3 mr-3 block md:my-0 md:inline">
+              <label class="my-3 mr-3 block lg:my-0 lg:inline">
                 <input
                   type="radio"
                   name="songsPerArtist"
@@ -366,9 +362,9 @@
             </div>
 
             {#if $form.songsPerArtist === 'all'}
-              <div class="col-span-3 md:col-span-2">
+              <div class="col-span-3 lg:col-span-2">
                 <div class="input-label field-required">Album type</div>
-                <label class="my-3 mr-3 block md:my-0 md:inline">
+                <label class="my-3 mr-3 block lg:my-0 lg:inline">
                   <input
                     type="radio"
                     name="albumType"
@@ -378,7 +374,7 @@
                   />
                   Both</label
                 >
-                <label class="my-3 mr-3 block md:my-0 md:inline">
+                <label class="my-3 mr-3 block lg:my-0 lg:inline">
                   <input
                     type="radio"
                     name="albumType"
@@ -388,7 +384,7 @@
                   />
                   Singles and EPs
                 </label>
-                <label class="my-3 mr-3 block md:my-0 md:inline">
+                <label class="my-3 mr-3 block lg:my-0 lg:inline">
                   <input
                     type="radio"
                     name="albumType"
@@ -401,9 +397,9 @@
               </div>
             {/if}
 
-            <div class="col-span-3 md:col-span-2">
+            <div class="col-span-3 lg:col-span-2">
               <div class="input-label field-required">Playlist visibility</div>
-              <label class="my-3 mr-3 block md:my-0 md:inline">
+              <label class="my-3 mr-3 block lg:my-0 lg:inline">
                 <input
                   type="radio"
                   name="playlistVisibility"
@@ -413,7 +409,7 @@
                 />
                 Private</label
               >
-              <label class="my-3 mr-3 block md:my-0 md:inline">
+              <label class="my-3 mr-3 block lg:my-0 lg:inline">
                 <input
                   type="radio"
                   name="playlistVisibility"
@@ -437,7 +433,7 @@
                 on:select={handleSelect}
                 isMulti
                 hasError={$errors.artists.length > 0}
-                placeholder="e.g. Coldplay"
+                placeholder="Coldplay"
               />
               {#if $errors.artists.length > 0}
                 <small class="form-validation-error">{$errors.artists}</small>
@@ -465,8 +461,10 @@
 </Modal>
 
 <style>
-  /* Remove box shadow from @tailwindcss/forms on svelte-select */
   :global(#artists) {
+    /* Remove box shadow from @tailwindcss/forms on svelte-select */
     box-shadow: none;
+    /* Fix ios zoom-in behavior */
+    font-size: 16px;
   }
 </style>

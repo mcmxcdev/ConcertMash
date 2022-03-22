@@ -19,10 +19,24 @@ const config = {
         exclude: ['@beyonk/svelte-notifications'],
       },
       ssr: {
-        noExternal: ['@beyonk/svelte-notifications'],
+        noExternal: ['@beyonk/svelte-notifications', '@fortawesome/*'],
       },
     },
     prerender: { default: true },
+    csp: {
+      mode: 'auto',
+      directives: {
+        'default-src': ['none'],
+        'script-src': ['self'],
+        'connect-src': ['self', 'https://api.spotify.com'],
+        'img-src': ['self', 'data:', 'blob:'],
+        'style-src': ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
+        'base-uri': ['self'],
+        'font-src': ['self', 'https://fonts.gstatic.com'],
+        'worker-src': ['self', 'blob:'],
+        'form-action': ['self'],
+      },
+    },
   },
 };
 

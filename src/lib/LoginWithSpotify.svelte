@@ -79,10 +79,6 @@
   });
 </script>
 
-<svelte:head>
-  <title>Home | ConcertMash</title>
-</svelte:head>
-
 <section class="img-bg">
   <div class="gradient-bg">
     <div class="container mx-auto px-3">
@@ -91,7 +87,11 @@
           <h1
             class="mb-10 inline-flex items-center text-3xl font-bold md:text-5xl"
           >
-            <img src="/favicon.svg" alt="" class="mr-3 h-10 w-10" />
+            <img
+              src="/favicon.svg"
+              alt="ConcertMash Logo"
+              class="mr-3 h-10 w-10"
+            />
 
             ConcertMash
           </h1>
@@ -115,13 +115,13 @@
   </div>
 </section>
 
-<section class="py-16">
-  <div class="container mx-auto px-3 ">
+<section class="relative overflow-hidden py-16">
+  <div class="container mx-auto px-3">
     <h2 class="mb-3 text-center text-3xl font-bold">How it works</h2>
 
     <div class="mb-10 grid h-full grid-cols-3 gap-6">
       <div class="col-span-3 flex flex-col md:col-span-1 md:flex-row">
-        <div class="relative rounded-md border bg-white px-5 py-10 shadow-lg">
+        <div class="rounded-md border bg-white px-5 py-10 shadow-lg">
           <div class="green-dot" />
           <div class="blue-dot" />
           <Icon data={faMusic} class="mb-3" scale={1.5} />
@@ -137,7 +137,7 @@
         </div>
       </div>
       <div class="col-span-3 flex flex-col md:col-span-1 md:flex-row">
-        <div class="relative rounded-md border bg-white px-5 py-10 shadow-lg">
+        <div class="rounded-md border bg-white px-5 py-10 shadow-lg">
           <div class="green-dot-2" />
           <div class="blue-dot-2" />
           <Icon data={faMusic} class="mb-3" scale={1.5} />
