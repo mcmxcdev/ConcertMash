@@ -10,5 +10,5 @@
     X-XSS-Protection = "1; mode=block"
     X-DNS-Prefetch-Control = "on"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Strict-Transport-Security: "max-age=31536000; includeSubDomains; preload"
-    Permissions-Policy: "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
