@@ -28,12 +28,16 @@ const config = {
       directives: {
         'default-src': ['none'],
         'script-src': ['self'],
-        'connect-src': ['self', 'https://api.spotify.com'],
+        'connect-src': [
+          'self',
+          'ws://localhost:3000',
+          'https://api.spotify.com',
+        ],
         'img-src': ['self', 'data:', 'blob:'],
         'style-src': ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
         'base-uri': ['self'],
         'font-src': ['self', 'https://fonts.gstatic.com'],
-        'worker-src': ['self', 'blob:'],
+        'child-src': ['self', 'blob:'],
         'form-action': ['self'],
       },
     },
