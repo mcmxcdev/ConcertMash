@@ -48,7 +48,6 @@ export const getArtistAlbums = async (
       case 'single': {
         return 'single';
       }
-      case 'both':
       default: {
         return 'single,album,compilation';
       }
