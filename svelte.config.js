@@ -13,15 +13,6 @@ const config = {
   kit: {
     adapter: adapter(),
     trailingSlash: 'ignore',
-    vite: {
-      optimizeDeps: {
-        // INFO: without the exclude, notifications don't show up
-        exclude: ['@beyonk/svelte-notifications'],
-      },
-      ssr: {
-        noExternal: ['@beyonk/svelte-notifications', '@fortawesome/*'],
-      },
-    },
     prerender: { default: true },
     csp: {
       mode: 'auto',
