@@ -10,6 +10,9 @@ const config = {
   server: {
     port: 3000,
   },
+  preview: {
+    port: 3000,
+  },
   ssr: {
     noExternal: ['@beyonk/svelte-notifications', '@fortawesome/*'],
   },
