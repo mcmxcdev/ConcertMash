@@ -13,7 +13,6 @@ const config = {
   kit: {
     adapter: adapter(),
     trailingSlash: 'ignore',
-    prerender: { default: true },
     csp: {
       mode: 'auto',
       directives: {

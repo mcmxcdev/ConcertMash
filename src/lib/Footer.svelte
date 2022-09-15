@@ -8,7 +8,6 @@
     <div class="grid w-full grid-cols-3 items-center justify-between gap-3">
       <div class="col-span-3 mx-auto md:col-span-1 md:mx-0">
         <a
-          sveltekit:prefetch
           href="/"
           class="inline-flex items-center text-xl font-semibold text-white"
         >
