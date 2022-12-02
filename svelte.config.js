@@ -8,11 +8,11 @@ const preprocess = [
   }),
 ];
 
+/** @type {import('@sveltejs/kit').Config} */
 const config = {
   preprocess: preprocess,
   kit: {
     adapter: adapter(),
-    trailingSlash: 'ignore',
     csp: {
       mode: 'auto',
       directives: {

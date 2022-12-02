@@ -12,7 +12,7 @@
 
 <Nav />
 
-<main class="flex-1" data-sveltekit-prefetch>
+<main class="flex-1">
   <slot />
 </main>
 
