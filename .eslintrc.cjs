@@ -27,7 +27,7 @@ module.exports = {
   },
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 2019,
+    ecmaVersion: 2020,
     project: ['./tsconfig.json'],
     extraFileExtensions: ['.svelte'],
   },
@@ -44,7 +44,7 @@ module.exports = {
     // eslint
     //
     eqeqeq: 'error',
-    "no-console": ["error", { allow: ["warn", "error", "info"] }],
+    'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
     //
     // @typescript-eslint
     //
