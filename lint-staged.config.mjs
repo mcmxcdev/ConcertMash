@@ -1,7 +1,7 @@
 export default {
   '*.{svelte,ts}': () => [
-    'npm run lint:fix',
-    'npm run check:format',
-    'npm run check:types'
+    'pnpm lint:fix',
+    'pnpm check:format',
+    'pnpm check:types',
   ],
 };

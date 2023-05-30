@@ -17,10 +17,13 @@
     "removeComments": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "$app/*": [".svelte/dev/runtime/app/*", ".svelte/build/runtime/app/*"],
-      "$lib": ["src/lib"],
-      "$lib/*": ["src/lib/*"],
-      "$static/*": ["src/static/*"]
+      "$app/*": [
+        "./.svelte/dev/runtime/app/*",
+        "./.svelte/build/runtime/app/*"
+      ],
+      "$lib": ["./src/lib"],
+      "$lib/*": ["./src/lib/*"],
+      "$static/*": ["./src/static/*"]
     }
   }
 }

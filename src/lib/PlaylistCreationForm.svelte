@@ -6,8 +6,6 @@
   import Modal from 'svelte-simple-modal';
   import * as yup from 'yup';
 
-  import { goto } from '$app/navigation';
-
   import {
     addCustomPlaylistCoverImage,
     addTracksToPlaylist,
@@ -15,16 +13,17 @@
     getAlbumTracks,
     getArtistAlbums,
     getArtistTopTracks,
+    MAXIMUM_LIMIT,
+    MAXIMUM_OFFSET,
     searchArtists,
   } from '../api';
   import { storedUser } from '../stores';
+  import type { FormFields, SelectValues } from '../utils/types';
   import ImageUpload from './ImageUpload.svelte';
   import ModalContent from './ModalContent.svelte';
   import RandomFactsOverlay from './RandomFactsOverlay.svelte';
 
-  type Artist = { id: string; label: string; value: string };
-
-  var limit = pLimit(1);
+  const plimit = pLimit(1);
 
   let playlistId = '';
   let playlistImage = '';
@@ -34,56 +33,110 @@
   let playlistCreationPending = false;
 
   const handleSearchArtist = async (filterText: string) => {
-    if (!filterText) {
+    if (filterText === '') {
       return [];
     }
 
-    const response = await searchArtists(filterText);
+    try {
+      const response = await searchArtists(filterText);
 
-    const artistSelecton = (response?.artists.items || []).map((artist) => {
-      const artistGenre =
-        artist.genres.length > 0 ? ` | ${artist.genres[0]}` : '';
-
-      return {
+      const artistSelecton = response.artists.items.map((artist) => ({
         id: artist.id,
-        label: artist.name + artistGenre,
+        label: `${artist.name} | ${artist.genres[0]}`,
         value: artist.name,
-      };
-    });
+      }));
 
-    return artistSelecton;
+      return artistSelecton;
+    } catch (error: any) {
+      // Access token expired
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (error.status === 401) {
+        notifier.danger(
+          'Access token expired, please authenticate again.',
+          3000,
+        );
+        window.location.reload();
+      }
+    }
   };
 
   const fetchArtistAlbumsPaginated = async (
     artistId: string,
     albumType: string,
     offset = 0,
+    limit = MAXIMUM_LIMIT,
   ) => {
-    const albumsFromArtist = await getArtistAlbums(artistId, albumType, offset);
-    const albumUris = albumsFromArtist?.items.map((album) => album.id);
+    const albumsFromArtist = await getArtistAlbums(
+      artistId,
+      albumType,
+      offset,
+      limit,
+    );
+    const albumUris = albumsFromArtist.items.map((album) => album.id);
 
     if (albumUris && albumUris.length > 0) {
       allAlbumUris = [...allAlbumUris, ...albumUris];
     }
 
-    if (albumsFromArtist?.next) {
-      offset = offset + 50;
+    if (albumsFromArtist.next) {
+      offset = offset + MAXIMUM_OFFSET;
       await fetchArtistAlbumsPaginated(artistId, albumType, offset);
     }
 
     return allAlbumUris;
   };
 
+  const excludeCertainTracks = (track: string) => {
+    if ($form.excludedSongTypes.includes('live')) {
+      const liveExclusionCriteria = [
+        ' (Live)',
+        ' [Live]',
+        ' - Live',
+        ' - Audiotree Live Version',
+      ];
+
+      return liveExclusionCriteria.some((criteria) => track.includes(criteria));
+    }
+
+    if ($form.excludedSongTypes.includes('instrumentals')) {
+      const instrumentalExclusionCriteria = 'Instrumental';
+
+      return track.includes(instrumentalExclusionCriteria);
+    }
+
+    if ($form.excludedSongTypes.includes('commentary')) {
+      const commentaryExclusionCriteria = 'Commentary';
+
+      return track.includes(commentaryExclusionCriteria);
+    }
+
+    if ($form.excludedSongTypes.includes('demo')) {
+      // We want to include the hypen in the check,
+      // since there could be song titles like "Demons" or similar
+      const demoExclusionCriteria = ' - Demo';
+
+      return track.includes(demoExclusionCriteria);
+    }
+
+    if ($form.excludedSongTypes.includes('remix')) {
+      const remixExclusionCriteria = 'Remix';
+
+      return track.includes(remixExclusionCriteria);
+    }
+  };
+
   const fetchAlbumTracksPaginated = async (albumUri: string, offset = 0) => {
     const albumTracks = await getAlbumTracks(albumUri, offset);
-    const albumTrackUris = albumTracks?.items.map((track) => track.uri);
+    const albumTrackUris = albumTracks.items
+      .filter((track) => !excludeCertainTracks(track.name))
+      .map((track) => track.uri);
 
     if (albumTrackUris && albumTrackUris.length > 0) {
       allTrackUris = [...allTrackUris, ...albumTrackUris];
     }
 
-    if (albumTracks?.next) {
-      offset = offset + 50;
+    if (albumTracks.next) {
+      offset = offset + MAXIMUM_OFFSET;
       await fetchAlbumTracksPaginated(albumUri, offset);
     }
 
@@ -93,20 +146,23 @@
   const fetchAllArtistSongs = async (
     artistIds: string[],
     albumType: string,
+    offset = 0,
+    limit = MAXIMUM_LIMIT,
   ) => {
     const throttledArtistAlbumRequests: Promise<string[]>[] = [];
     artistIds.map((artistId) => {
       throttledArtistAlbumRequests.push(
-        limit(() => fetchArtistAlbumsPaginated(artistId, albumType)),
+        plimit(() =>
+          fetchArtistAlbumsPaginated(artistId, albumType, offset, limit),
+        ),
       );
     });
-
     await Promise.all(throttledArtistAlbumRequests);
 
     const throttledAlbumTracksRequests: Promise<string[]>[] = [];
     allAlbumUris.map((albumUri) => {
       throttledAlbumTracksRequests.push(
-        limit(() => fetchAlbumTracksPaginated(albumUri)),
+        plimit(() => fetchAlbumTracksPaginated(albumUri)),
       );
     });
     await Promise.all(throttledAlbumTracksRequests);
@@ -117,11 +173,13 @@
       [];
     artistIds.map((artistId) => {
       throttledArtistTopTracksRequests.push(
-        limit(() => getArtistTopTracks(artistId)),
+        plimit(() => getArtistTopTracks(artistId)),
       );
     });
+
     const allArtistTopTracks: SpotifyApi.ArtistsTopTracksResponse[] =
       await Promise.all(throttledArtistTopTracksRequests);
+
     const artistTopTrackUris = allArtistTopTracks.flatMap((tracks) =>
       tracks.tracks.map((track) => track.uri),
     );
@@ -131,24 +189,34 @@
     }
   };
 
-  const handlePlaylistCreation = async (values: {
-    playlistTitle: string;
-    playlistDescription: string;
-    songsPerArtist: string;
-    playlistVisibility: string;
-    artists: Artist[] | undefined;
-    albumType: string;
-  }) => {
+  const handlePlaylistCreation = async (values: FormFields) => {
     try {
       playlistCreationPending = true;
 
-      const artistIds = (values.artists || []).map(
-        (artist: Artist) => artist.id,
-      );
+      const artistIds = values.artists.map((artist: SelectValues) => artist.id);
 
-      await (values.songsPerArtist === 'all'
-        ? fetchAllArtistSongs(artistIds, values.albumType)
-        : fetchArtistTop10Songs(artistIds));
+      switch (values.songsPerArtist) {
+        case 'top10': {
+          await fetchArtistTop10Songs(artistIds);
+          break;
+        }
+        case 'top10-and-most-recent-release': {
+          await fetchArtistTop10Songs(artistIds);
+
+          const MOST_RECENT_RELEASE_LIMIT = 1;
+          await fetchAllArtistSongs(
+            artistIds,
+            values.albumType,
+            undefined,
+            MOST_RECENT_RELEASE_LIMIT,
+          );
+          break;
+        }
+        case 'all': {
+          await fetchAllArtistSongs(artistIds, values.albumType);
+          break;
+        }
+      }
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const createdPlaylist = await createPlaylist($storedUser!, values);
@@ -176,7 +244,7 @@
 
       batchedTrackUris.map((trackUris) =>
         throttledAddTracksToPlaylistRequests.push(
-          limit(() => addTracksToPlaylist(playlistId, trackUris)),
+          plimit(() => addTracksToPlaylist(playlistId, trackUris)),
         ),
       );
       await Promise.all(throttledAddTracksToPlaylistRequests);
@@ -193,8 +261,8 @@
 
       // Access token expired
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (error.response.status === 401) {
-        await goto('/');
+      if (error.status === 401) {
+        window.location.reload();
       } else {
         notifier.danger("Couldn't create playlist. Please try again.", 3000);
       }
@@ -209,14 +277,21 @@
     handleChange,
     handleSubmit,
     handleReset,
-  } = createForm({
+  } = createForm<FormFields>({
     initialValues: {
       playlistTitle: '',
       playlistDescription: '',
       playlistVisibility: 'private',
-      songsPerArtist: 'top10',
+      songsPerArtist: 'top10-and-most-recent-release',
       albumType: 'both',
-      artists: undefined,
+      artists: [],
+      excludedSongTypes: [
+        'live',
+        'instrumentals',
+        'commentary',
+        'demo',
+        'remix',
+      ],
     },
     validationSchema: yup.object().shape({
       playlistTitle: yup
@@ -228,6 +303,7 @@
         .required('Playlist visibility is a required field.'),
       songsPerArtist: yup
         .string()
+        .oneOf(['top10', 'top10-and-most-recent-release', 'all'])
         .required('Songs per artist is a required field.'),
       albumType: yup
         .string()
@@ -242,25 +318,28 @@
             value: yup.string(),
           }),
         )
+        .min(1, 'Artists is a required field.')
         .typeError('Artists is a required field.')
         .required('Artists is a required field.'),
+      excludedSongTypes: yup
+        .array()
+        .of(
+          yup
+            .string()
+            .oneOf(['live', 'instrumentals', 'commentary', 'demo', 'remix']),
+        ),
     }),
     onSubmit: async (values) => {
       await handlePlaylistCreation(values);
     },
   });
 
-  type DropdownSelection = { id: string; label: string; value: string };
-
-  const handleSelect = (event: Event & { detail: DropdownSelection }) => {
+  const handleSelect = (event: Event & { detail: SelectValues }) => {
     // Open issue for $errors not updating without handleChange
     // See: https://github.com/tjinauyeung/svelte-forms-lib/issues/110
-    // @ts-expect-error Type '{ id: string; label: string; value: string; }' is missing the following properties from type 'never[]': length, pop, push, concat, and 29 more.
-    form.set({ ...$form, artists: event.detail });
+    form.set({ ...$form, artists: [...$form.artists, event.detail] });
     errors.set({ ...$errors, artists: '' });
   };
-
-  const getSelectionLabel = (option: DropdownSelection) => option.value;
 </script>
 
 {#if playlistCreationPending}
@@ -275,7 +354,7 @@
           <h2 class="mb-10 text-3xl font-bold">Playlist Info</h2>
 
           <div class="grid grid-cols-3 gap-8">
-            <div class="col-span-3 row-span-5 lg:col-span-1">
+            <div class="col-span-3 row-span-6 lg:col-span-1">
               <label for="playlistImage" class="input-label"
                 >Playlist image <span class="text-xs text-gray-400"
                   >(jpeg, maximum 256kb)</span
@@ -334,8 +413,9 @@
                 >
                   <span class="block text-xs sm:inline"
                     ><span class="font-bold">Note: </span> The playlist generation
-                    can fail with "All" mode for artists with lots of albums or compilations.
-                    This is due to request limitations with the Spotify API.</span
+                    could fail with "All" mode for artists with lots of albums or
+                    compilations. This is due to request limitations with the Spotify
+                    API.</span
                   >
                 </div>
               {/if}
@@ -353,6 +433,16 @@
                 <input
                   type="radio"
                   name="songsPerArtist"
+                  value="top10-and-most-recent-release"
+                  on:keyup={handleChange}
+                  bind:group={$form.songsPerArtist}
+                />
+                Top 10 + Most recent release
+              </label>
+              <label class="my-3 mr-3 block lg:my-0 lg:inline">
+                <input
+                  type="radio"
+                  name="songsPerArtist"
                   value="all"
                   on:keyup={handleChange}
                   bind:group={$form.songsPerArtist}
@@ -361,7 +451,7 @@
               </label>
             </div>
 
-            {#if $form.songsPerArtist === 'all'}
+            {#if $form.songsPerArtist !== 'top10'}
               <div class="col-span-3 lg:col-span-2">
                 <div class="input-label field-required">Album type</div>
                 <label class="my-3 mr-3 block lg:my-0 lg:inline">
@@ -398,6 +488,60 @@
             {/if}
 
             <div class="col-span-3 lg:col-span-2">
+              <div class="input-label">Excluded song types</div>
+              <label class="my-3 mr-3 block lg:my-0 lg:inline">
+                <input
+                  type="checkbox"
+                  name="excludedSongTypes"
+                  value="live"
+                  on:keyup={handleChange}
+                  bind:group={$form.excludedSongTypes}
+                />
+                Live</label
+              >
+              <label class="my-3 mr-3 block lg:my-0 lg:inline">
+                <input
+                  type="checkbox"
+                  name="excludedSongTypes"
+                  value="instrumentals"
+                  on:keyup={handleChange}
+                  bind:group={$form.excludedSongTypes}
+                />
+                Instrumentals
+              </label>
+              <label class="my-3 mr-3 block lg:my-0 lg:inline">
+                <input
+                  type="checkbox"
+                  name="excludedSongTypes"
+                  value="commentary"
+                  on:keyup={handleChange}
+                  bind:group={$form.excludedSongTypes}
+                />
+                Commentary
+              </label>
+              <label class="my-3 mr-3 block lg:my-0 lg:inline">
+                <input
+                  type="checkbox"
+                  name="excludedSongTypes"
+                  value="demo"
+                  on:keyup={handleChange}
+                  bind:group={$form.excludedSongTypes}
+                />
+                Demo
+              </label>
+              <label class="my-3 mr-3 block lg:my-0 lg:inline">
+                <input
+                  type="checkbox"
+                  name="excludedSongTypes"
+                  value="remix"
+                  on:keyup={handleChange}
+                  bind:group={$form.excludedSongTypes}
+                />
+                Remix
+              </label>
+            </div>
+
+            <div class="col-span-3 lg:col-span-2">
               <div class="input-label field-required">Playlist visibility</div>
               <label class="my-3 mr-3 block lg:my-0 lg:inline">
                 <input
@@ -427,11 +571,9 @@
               </label>
               <Select
                 id="artists"
-                value={$form.artists}
                 loadOptions={handleSearchArtist}
-                {getSelectionLabel}
                 on:select={handleSelect}
-                isMulti
+                multiple
                 hasError={$errors.artists.length > 0}
                 placeholder="Coldplay"
               />

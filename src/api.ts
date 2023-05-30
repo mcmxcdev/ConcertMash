@@ -1,6 +1,11 @@
 import SpotifyWebApi from 'spotify-web-api-js';
 
+import type { FormFields } from './utils/types';
+
 const spotifyApi = new SpotifyWebApi();
+
+export const MAXIMUM_LIMIT = 50;
+export const MAXIMUM_OFFSET = 50;
 
 export const getMe = async () => {
   const response = await spotifyApi.getMe();
@@ -9,11 +14,7 @@ export const getMe = async () => {
 
 export const createPlaylist = async (
   user: { id: string },
-  values: {
-    playlistTitle: string;
-    playlistDescription: string;
-    playlistVisibility: string;
-  },
+  values: FormFields,
 ) => {
   const { playlistTitle, playlistDescription, playlistVisibility } = values;
 
@@ -37,8 +38,9 @@ export const getArtistAlbums = async (
   artistId: string,
   albumType: string,
   offset: number,
+  limit = MAXIMUM_LIMIT,
 ) => {
-  // We have to take care of filtering album type because Spotify includes appears_on by default
+  // We have to take care of filtering album type because Spotify includes "appears_on" album type by default
   // This is A LOT of albums and noise for popular artists like Coldplay for example
   const filterAlbumType = () => {
     switch (albumType) {
@@ -55,7 +57,7 @@ export const getArtistAlbums = async (
   };
 
   const response = await spotifyApi.getArtistAlbums(artistId, {
-    limit: 50, // maximum
+    limit: limit,
     offset: offset,
     include_groups: filterAlbumType(),
   });
@@ -72,7 +74,7 @@ export const getArtistTopTracks = async (
 
 export const getAlbumTracks = async (albumId: string, offset: number) => {
   const response = await spotifyApi.getAlbumTracks(albumId, {
-    limit: 50, // maximum
+    limit: MAXIMUM_LIMIT,
     offset: offset,
   });
   return response;

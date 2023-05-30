@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { isDev } from '../stores';
+  import { dev } from '$app/environment';
 </script>
 
-{#if $isDev}
+{#if dev}
   <!-- Display current tailwind breakpoint in dev -->
   <div class="fixed top-0 z-50 p-2 text-xs font-bold text-black">
     <span class="rounded bg-yellow-400 p-1 px-1 sm:hidden">XS</span>
