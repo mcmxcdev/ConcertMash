@@ -32,6 +32,8 @@
   let isGenerationDone = false;
   let playlistCreationPending = false;
 
+  const MOST_RECENT_RELEASE_LIMIT = 1;
+
   const handleSearchArtist = async (filterText: string) => {
     if (filterText === '') {
       return [];
@@ -40,11 +42,16 @@
     try {
       const response = await searchArtists(filterText);
 
-      const artistSelecton = response.artists.items.map((artist) => ({
-        id: artist.id,
-        label: `${artist.name} | ${artist.genres[0]}`,
-        value: artist.name,
-      }));
+      const artistSelecton = (response?.artists.items || []).map((artist) => {
+        const artistGenre =
+          artist.genres.length > 0 ? ` | ${artist.genres[0]}` : '';
+
+        return {
+          id: artist.id,
+          label: artist.name + artistGenre,
+          value: artist.name,
+        };
+      });
 
       return artistSelecton;
     } catch (error: any) {
@@ -78,7 +85,9 @@
       allAlbumUris = [...allAlbumUris, ...albumUris];
     }
 
-    if (albumsFromArtist.next) {
+    // Whenever the selected songs per artist mode is "top10-and-most-recent-release",
+    // we need to opt out the recursive behavior based on the limit parameter to avoid fetching more albums than one
+    if (albumsFromArtist.next && limit !== MOST_RECENT_RELEASE_LIMIT) {
       offset = offset + MAXIMUM_OFFSET;
       await fetchArtistAlbumsPaginated(artistId, albumType, offset);
     }
@@ -203,7 +212,6 @@
         case 'top10-and-most-recent-release': {
           await fetchArtistTop10Songs(artistIds);
 
-          const MOST_RECENT_RELEASE_LIMIT = 1;
           await fetchAllArtistSongs(
             artistIds,
             values.albumType,
@@ -571,11 +579,13 @@
               </label>
               <Select
                 id="artists"
+                value={$form.artists}
                 loadOptions={handleSearchArtist}
                 on:select={handleSelect}
                 multiple
                 hasError={$errors.artists.length > 0}
                 placeholder="Coldplay"
+                hideEmptyState
               />
               {#if $errors.artists.length > 0}
                 <small class="form-validation-error">{$errors.artists}</small>
