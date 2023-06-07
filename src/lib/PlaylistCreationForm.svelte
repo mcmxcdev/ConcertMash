@@ -348,6 +348,15 @@
     form.set({ ...$form, artists: [...$form.artists, event.detail] });
     errors.set({ ...$errors, artists: '' });
   };
+
+  const handleClear = (event: Event & { detail: SelectValues }) => {
+    const filteredArtists = $form.artists.filter(
+      (artist) => artist.id !== event.detail.id,
+    );
+
+    form.set({ ...$form, artists: filteredArtists });
+    errors.set({ ...$errors, artists: '' });
+  };
 </script>
 
 {#if playlistCreationPending}
@@ -582,6 +591,7 @@
                 value={$form.artists}
                 loadOptions={handleSearchArtist}
                 on:select={handleSelect}
+                on:clear={handleClear}
                 multiple
                 hasError={$errors.artists.length > 0}
                 placeholder="Coldplay"
