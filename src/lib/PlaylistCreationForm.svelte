@@ -96,6 +96,8 @@
   };
 
   const excludeCertainTracks = (track: string) => {
+    let shouldExcludeTrack = false;
+
     if ($form.excludedSongTypes.includes('live')) {
       const liveExclusionCriteria = [
         ' (Live)',
@@ -104,19 +106,25 @@
         ' - Audiotree Live Version',
       ];
 
-      return liveExclusionCriteria.some((criteria) => track.includes(criteria));
+      if (liveExclusionCriteria.some((criteria) => track.includes(criteria))) {
+        shouldExcludeTrack = true;
+      }
     }
 
     if ($form.excludedSongTypes.includes('instrumentals')) {
       const instrumentalExclusionCriteria = 'Instrumental';
 
-      return track.includes(instrumentalExclusionCriteria);
+      if (track.includes(instrumentalExclusionCriteria)) {
+        shouldExcludeTrack = true;
+      }
     }
 
     if ($form.excludedSongTypes.includes('commentary')) {
       const commentaryExclusionCriteria = 'Commentary';
 
-      return track.includes(commentaryExclusionCriteria);
+      if (track.includes(commentaryExclusionCriteria)) {
+        shouldExcludeTrack = true;
+      }
     }
 
     if ($form.excludedSongTypes.includes('demo')) {
@@ -124,14 +132,20 @@
       // since there could be song titles like "Demons" or similar
       const demoExclusionCriteria = ' - Demo';
 
-      return track.includes(demoExclusionCriteria);
+      if (track.includes(demoExclusionCriteria)) {
+        shouldExcludeTrack = true;
+      }
     }
 
     if ($form.excludedSongTypes.includes('remix')) {
       const remixExclusionCriteria = 'Remix';
 
-      return track.includes(remixExclusionCriteria);
+      if (track.includes(remixExclusionCriteria)) {
+        shouldExcludeTrack = true;
+      }
     }
+
+    return shouldExcludeTrack;
   };
 
   const fetchAlbumTracksPaginated = async (albumUri: string, offset = 0) => {
