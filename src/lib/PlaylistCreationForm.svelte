@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { notifier } from '@beyonk/svelte-notifications';
+  import { toast } from '@zerodevx/svelte-toast';
   import pLimit from 'p-limit';
   import { createForm } from 'svelte-forms-lib';
   import Select from 'svelte-select';
@@ -54,14 +54,17 @@
       });
 
       return artistSelecton;
-    } catch (error: any) {
+    } catch (error) {
       // Access token expired
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (error.status === 401) {
-        notifier.danger(
-          'Access token expired, please authenticate again.',
-          3000,
-        );
+        toast.push('Hello world!', {
+          theme: {
+            '--toastColor': '#FFFFFF',
+            '--toastBackground': '#BB2124',
+            '--toastBarBackground': '#0000004D',
+          },
+        });
         window.location.reload();
       }
     }
@@ -95,7 +98,9 @@
     return allAlbumUris;
   };
 
-  const excludeCertainTracks = (track: string) => {
+  const excludeCertainTracks = (trackName: string) => {
+    const lowercasedTrackName = trackName.toLowerCase();
+
     let shouldExcludeTrack = false;
 
     if ($form.excludedSongTypes.includes('live')) {
@@ -106,23 +111,27 @@
         ' - Audiotree Live Version',
       ];
 
-      if (liveExclusionCriteria.some((criteria) => track.includes(criteria))) {
+      if (
+        liveExclusionCriteria.some((criteria) =>
+          lowercasedTrackName.includes(criteria),
+        )
+      ) {
         shouldExcludeTrack = true;
       }
     }
 
     if ($form.excludedSongTypes.includes('instrumentals')) {
-      const instrumentalExclusionCriteria = 'Instrumental';
+      const instrumentalExclusionCriteria = 'instrumental';
 
-      if (track.includes(instrumentalExclusionCriteria)) {
+      if (lowercasedTrackName.includes(instrumentalExclusionCriteria)) {
         shouldExcludeTrack = true;
       }
     }
 
     if ($form.excludedSongTypes.includes('commentary')) {
-      const commentaryExclusionCriteria = 'Commentary';
+      const commentaryExclusionCriteria = 'commentary';
 
-      if (track.includes(commentaryExclusionCriteria)) {
+      if (lowercasedTrackName.includes(commentaryExclusionCriteria)) {
         shouldExcludeTrack = true;
       }
     }
@@ -130,17 +139,17 @@
     if ($form.excludedSongTypes.includes('demo')) {
       // We want to include the hypen in the check,
       // since there could be song titles like "Demons" or similar
-      const demoExclusionCriteria = ' - Demo';
+      const demoExclusionCriteria = ' - demo';
 
-      if (track.includes(demoExclusionCriteria)) {
+      if (lowercasedTrackName.includes(demoExclusionCriteria)) {
         shouldExcludeTrack = true;
       }
     }
 
     if ($form.excludedSongTypes.includes('remix')) {
-      const remixExclusionCriteria = 'Remix';
+      const remixExclusionCriteria = 'remix';
 
-      if (track.includes(remixExclusionCriteria)) {
+      if (lowercasedTrackName.includes(remixExclusionCriteria)) {
         shouldExcludeTrack = true;
       }
     }
@@ -277,7 +286,7 @@
       allTrackUris = [];
       isGenerationDone = true;
       playlistCreationPending = false;
-    } catch (error: any) {
+    } catch (error) {
       playlistCreationPending = false;
       console.error(error);
 
@@ -286,7 +295,13 @@
       if (error.status === 401) {
         window.location.reload();
       } else {
-        notifier.danger("Couldn't create playlist. Please try again.", 3000);
+        toast.push("Couldn't create playlist. Please try again.", {
+          theme: {
+            '--toastColor': '#FFFFFF',
+            '--toastBackground': '#BB2124',
+            '--toastBarBackground': '#0000004D',
+          },
+        });
       }
     }
   };

@@ -6,13 +6,13 @@ module.exports = {
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:svelte/recommended',
     'plugin:import/typescript',
     'plugin:unicorn/recommended',
     'plugin:promise/recommended',
     'prettier',
   ],
   plugins: [
-    'svelte3',
     '@typescript-eslint',
     'simple-import-sort',
     'import',
@@ -21,19 +21,24 @@ module.exports = {
     'prettier',
   ],
   ignorePatterns: ['*.cjs'],
-  overrides: [{ files: ['*.svelte'], processor: 'svelte3/svelte3' }],
-  settings: {
-    'svelte3/typescript': () => require('typescript'),
-  },
+  overrides: [
+    {
+      files: ['*.svelte'],
+      parser: 'svelte-eslint-parser',
+      parserOptions: {
+        parser: '@typescript-eslint/parser',
+      },
+    },
+  ],
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 2020,
+    ecmaVersion: 2022,
     project: ['./tsconfig.json'],
     extraFileExtensions: ['.svelte'],
   },
   env: {
     browser: true,
-    es2017: true,
+    es2022: true,
     node: true,
   },
   globals: {
@@ -64,10 +69,8 @@ module.exports = {
     //
     'unicorn/filename-case': 'off',
     'unicorn/no-null': 'off',
-    'unicorn/no-useless-undefined': 'off',
     'unicorn/prevent-abbreviations': 'off',
     'unicorn/no-array-reduce': 'off',
-    'unicorn/prefer-object-from-entries': 'off',
     //
     // eslint-plugin-promise
     //

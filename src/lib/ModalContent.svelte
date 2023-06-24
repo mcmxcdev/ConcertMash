@@ -5,7 +5,7 @@
 
   type ContextProps = {
     open: (
-      Component: typeof SvelteComponent,
+      Component: typeof SvelteComponent<any>,
       props: Record<string, string>,
     ) => void;
     close: (callbacks?: Record<string, string>) => void;
