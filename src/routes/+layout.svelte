@@ -1,11 +1,15 @@
 <script lang="ts">
   import '../app.css';
 
-  import { NotificationDisplay } from '@beyonk/svelte-notifications';
+  import { SvelteToast } from '@zerodevx/svelte-toast';
 
   import BreakpointHelper from '$lib/BreakpointHelper.svelte';
   import Footer from '$lib/Footer.svelte';
   import Nav from '$lib/Nav.svelte';
+
+  const options = {
+    duration: 3000,
+  };
 </script>
 
 <BreakpointHelper />
@@ -18,4 +22,4 @@
 
 <Footer />
 
-<NotificationDisplay />
+<SvelteToast {options} />

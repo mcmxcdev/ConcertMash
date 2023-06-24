@@ -16,6 +16,7 @@
     "importHelpers": false,
     "removeComments": true,
     "allowSyntheticDefaultImports": true,
+    "useUnknownInCatchVariables": false,
     "paths": {
       "$app/*": [
         "./.svelte/dev/runtime/app/*",
