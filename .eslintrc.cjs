@@ -4,13 +4,14 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:@typescript-eslint/strict',
+    'plugin:@typescript-eslint/strict-type-checked',
+    'plugin:@typescript-eslint/stylistic-type-checked',
     'plugin:svelte/recommended',
     'plugin:import/typescript',
     'plugin:unicorn/recommended',
     'plugin:promise/recommended',
-    'prettier',
+    'plugin:prettier/recommended'
   ],
   plugins: [
     '@typescript-eslint',
@@ -18,7 +19,6 @@ module.exports = {
     'import',
     'unicorn',
     'promise',
-    'prettier',
   ],
   ignorePatterns: ['*.cjs'],
   overrides: [
@@ -54,6 +54,7 @@ module.exports = {
     // @typescript-eslint
     //
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/consistent-type-definitions': 'off',
     //
     // eslint-plugin-import
     //

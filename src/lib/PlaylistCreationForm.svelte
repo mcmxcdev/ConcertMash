@@ -42,6 +42,7 @@
     try {
       const response = await searchArtists(filterText);
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       const artistSelecton = (response?.artists.items || []).map((artist) => {
         const artistGenre =
           artist.genres.length > 0 ? ` | ${artist.genres[0]}` : '';
@@ -84,7 +85,7 @@
     );
     const albumUris = albumsFromArtist.items.map((album) => album.id);
 
-    if (albumUris && albumUris.length > 0) {
+    if (albumUris.length > 0) {
       allAlbumUris = [...allAlbumUris, ...albumUris];
     }
 
@@ -163,7 +164,7 @@
       .filter((track) => !excludeCertainTracks(track.name))
       .map((track) => track.uri);
 
-    if (albumTrackUris && albumTrackUris.length > 0) {
+    if (albumTrackUris.length > 0) {
       allTrackUris = [...allTrackUris, ...albumTrackUris];
     }
 
@@ -251,11 +252,9 @@
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const createdPlaylist = await createPlaylist($storedUser!, values);
-      if (createdPlaylist) {
-        playlistId = createdPlaylist.id;
-      }
+      playlistId = createdPlaylist.id;
 
-      if (playlistImage && createdPlaylist) {
+      if (playlistImage) {
         await addCustomPlaylistCoverImage(playlistId, playlistImage);
       }
 

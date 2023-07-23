@@ -1,11 +1,6 @@
+/** @type {import('prettier').Config} */
 module.exports = {
   singleQuote: true,
-  trailingComma: 'all',
   svelteAllowShorthand: true,
-  plugins: [
-    require('prettier-plugin-svelte'),
-    require('prettier-plugin-tailwindcss'),
-  ],
-  pluginSearchDirs: ['.'],
-  overrides: [{ files: '*.svelte', options: { parser: 'svelte' } }],
+  plugins: ['prettier-plugin-svelte', 'prettier-plugin-tailwindcss'],
 };
