@@ -1,17 +1,16 @@
+/** @type {import('eslint').Linter.Config} */
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   extends: [
     'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/strict',
     'plugin:@typescript-eslint/strict-type-checked',
     'plugin:@typescript-eslint/stylistic-type-checked',
     'plugin:svelte/recommended',
     'plugin:import/typescript',
     'plugin:unicorn/recommended',
     'plugin:promise/recommended',
-    'plugin:prettier/recommended'
+    'plugin:prettier/recommended',
   ],
   plugins: [
     '@typescript-eslint',
@@ -32,18 +31,19 @@ module.exports = {
   ],
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 2022,
+    ecmaVersion: 'latest',
     project: ['./tsconfig.json'],
     extraFileExtensions: ['.svelte'],
   },
   env: {
     browser: true,
-    es2022: true,
+    es2024: true,
     node: true,
   },
   globals: {
     SpotifyApi: 'readonly',
   },
+  reportUnusedDisableDirectives: true,
   rules: {
     //
     // eslint

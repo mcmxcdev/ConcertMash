@@ -1,7 +1,7 @@
 export default {
-  '*.{svelte,ts}': () => [
+  '*.{js,cjs,json,ts,svelte}': () => [
+    'pnpm format',
     'pnpm lint:fix',
-    'pnpm check:format',
-    'pnpm check:types',
+    'pnpm validate',
   ],
 };
