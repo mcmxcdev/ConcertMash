@@ -1,5 +1,6 @@
 import sveltePreprocess from 'svelte-preprocess';
 import adapter from '@sveltejs/adapter-static';
+import path from 'path';
 
 const preprocess = [
   sveltePreprocess({
@@ -13,6 +14,10 @@ const config = {
   preprocess: preprocess,
   kit: {
     adapter: adapter(),
+    alias: {
+      $src: path.resolve('./src'),
+      $lib: path.resolve('./src/lib'),
+    },
     csp: {
       mode: 'auto',
       directives: {
