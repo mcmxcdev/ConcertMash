@@ -21,7 +21,7 @@ export const createPlaylist = async (
   const response = await spotifyApi.createPlaylist(user.id, {
     name: playlistTitle,
     description: playlistDescription,
-    public: playlistVisibility === 'public' ? true : false,
+    public: playlistVisibility === 'public',
   });
   return response;
 };

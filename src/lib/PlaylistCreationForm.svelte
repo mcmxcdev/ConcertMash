@@ -400,11 +400,11 @@
 
           <div class="grid grid-cols-3 gap-8">
             <div class="col-span-3 row-span-6 lg:col-span-1">
-              <label for="playlistImage" class="input-label"
-                >Playlist image <span class="text-xs text-gray-400"
+              <div class="input-label">
+                Playlist image <span class="text-xs text-gray-400"
                   >(jpeg, maximum 256kb)</span
-                ></label
-              >
+                >
+              </div>
               <ImageUpload bind:playlistImage />
             </div>
             <div class="col-span-3 lg:col-span-2">
