@@ -1,15 +1,11 @@
 <script lang="ts">
   import '../app.css';
 
-  import { SvelteToast } from '@zerodevx/svelte-toast';
+  import { Toaster } from 'svelte-sonner';
 
   import BreakpointHelper from '$lib/BreakpointHelper.svelte';
   import Footer from '$lib/Footer.svelte';
   import Nav from '$lib/Nav.svelte';
-
-  const options = {
-    duration: 3000,
-  };
 </script>
 
 <BreakpointHelper />
@@ -22,4 +18,4 @@
 
 <Footer />
 
-<SvelteToast {options} />
+<Toaster duration={3000} />

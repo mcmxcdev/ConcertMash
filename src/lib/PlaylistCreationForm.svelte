@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { toast } from '@zerodevx/svelte-toast';
+  import { toast } from 'svelte-sonner';
   import pLimit from 'p-limit';
   import { createForm } from 'svelte-forms-lib';
   import Select from 'svelte-select';
-  import Modal from 'svelte-simple-modal';
   import * as yup from 'yup';
 
   import {
@@ -20,8 +19,8 @@
   import { storedUser } from '../stores';
   import type { FormFields, SelectValues } from '../utils/types';
   import ImageUpload from './ImageUpload.svelte';
-  import ModalContent from './ModalContent.svelte';
   import RandomFactsOverlay from './RandomFactsOverlay.svelte';
+  import PlaylistCreationSuccessModal from './PlaylistCreationSuccessModal.svelte';
 
   const plimit = pLimit(1);
 
@@ -59,13 +58,7 @@
       // Access token expired
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (error.status === 401) {
-        toast.push('Hello world!', {
-          theme: {
-            '--toastColor': '#FFFFFF',
-            '--toastBackground': '#BB2124',
-            '--toastBarBackground': '#0000004D',
-          },
-        });
+        toast('Access token expired.');
         window.location.reload();
       }
     }
@@ -294,13 +287,7 @@
       if (error.status === 401) {
         window.location.reload();
       } else {
-        toast.push("Couldn't create playlist. Please try again.", {
-          theme: {
-            '--toastColor': '#FFFFFF',
-            '--toastBackground': '#BB2124',
-            '--toastBarBackground': '#0000004D',
-          },
-        });
+        toast("Couldn't create playlist. Please try again.");
       }
     }
   };
@@ -646,9 +633,7 @@
   </div>
 </section>
 
-<Modal>
-  <ModalContent {playlistId} {isGenerationDone} />
-</Modal>
+<PlaylistCreationSuccessModal bind:showModal={isGenerationDone} {playlistId} />
 
 <style>
   :global(#artists) {
