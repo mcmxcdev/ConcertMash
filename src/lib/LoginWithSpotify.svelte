@@ -25,7 +25,7 @@
       '%20',
     )}&response_type=token&show_dialog=true`;
 
-    window.location.href = spotifyAuthURL;
+    globalThis.location.href = spotifyAuthURL;
   };
 
   const setAccessToken = () => {
@@ -33,7 +33,7 @@
       access_token: string;
       expires_in: string;
       token_type: string;
-    } = window.location.hash
+    } = globalThis.location.hash
       .slice(1)
       .split('&')
       .reduce(
@@ -125,14 +125,18 @@
           <div class="green-dot"></div>
           <div class="blue-dot"></div>
           <Icon data={faMusic} class="mb-3" scale={1.5} />
-          <h3 class="step-color mb-3 text-xl font-bold">Step 1</h3>
+          <h3 class="text-spotify-hover-green mb-3 text-xl font-bold">
+            Step 1
+          </h3>
           <p>Log in with Spotify to provide access</p>
         </div>
       </div>
       <div class="col-span-3 flex flex-col md:col-span-1 md:flex-row">
         <div class="rounded-md border bg-white px-5 py-10 shadow-lg">
           <Icon data={faMusic} class="mb-3" scale={1.5} />
-          <h3 class="step-color mb-3 text-xl font-bold">Step 2</h3>
+          <h3 class="text-spotify-hover-green mb-3 text-xl font-bold">
+            Step 2
+          </h3>
           <p>Generate your desired playlist by filling out a simple form</p>
         </div>
       </div>
@@ -141,7 +145,9 @@
           <div class="green-dot-2"></div>
           <div class="blue-dot-2"></div>
           <Icon data={faMusic} class="mb-3" scale={1.5} />
-          <h3 class="step-color mb-3 text-xl font-bold">Step 3</h3>
+          <h3 class="text-spotify-hover-green mb-3 text-xl font-bold">
+            Step 3
+          </h3>
           <p>Open up Spotify and listen to your newly-created playlist!</p>
         </div>
       </div>
@@ -152,9 +158,3 @@
     </div>
   </div>
 </section>
-
-<style lang="postcss">
-  .step-color {
-    @apply text-spotify-hover-green;
-  }
-</style>

@@ -59,7 +59,7 @@
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (error.status === 401) {
         toast('Access token expired.');
-        window.location.reload();
+        globalThis.location.reload();
       }
     }
   };
@@ -285,7 +285,7 @@
       // Access token expired
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (error.status === 401) {
-        window.location.reload();
+        globalThis.location.reload();
       } else {
         toast("Couldn't create playlist. Please try again.");
       }
@@ -440,7 +440,7 @@
               <div class="input-label field-required">Songs per artist</div>
               {#if $form.songsPerArtist === 'all'}
                 <div
-                  class="relative mb-3 rounded border border-gray-400 bg-gray-100 px-2 py-1 text-gray-700"
+                  class="relative mb-3 rounded-sm border border-gray-400 bg-gray-100 px-2 py-1 text-gray-700"
                   role="alert"
                 >
                   <span class="block text-xs sm:inline"

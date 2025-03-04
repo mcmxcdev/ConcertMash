@@ -1,4 +1,4 @@
-import sveltePreprocess from 'svelte-preprocess';
+import { sveltePreprocess } from 'svelte-preprocess';
 import adapter from '@sveltejs/adapter-static';
 import path from 'path';
 
