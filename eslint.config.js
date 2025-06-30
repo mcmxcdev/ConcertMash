@@ -12,8 +12,7 @@ export default tseslint.config(
   ...tseslint.configs.stylisticTypeChecked,
   ...eslintPluginSvelte.configs['flat/recommended'],
   eslintPluginPromise.configs['flat/recommended'],
-  // @ts-expect-error Not sure why it throws TS errors, but the config itself does work as expected
-  eslintPluginUnicorn.configs['flat/recommended'],
+  eslintPluginUnicorn.configs['recommended'],
   prettier,
   ...eslintPluginSvelte.configs['flat/prettier'],
   {
@@ -52,6 +51,8 @@ export default tseslint.config(
       //
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
       //
       // eslint-plugin-unicorn
       //
@@ -67,6 +68,15 @@ export default tseslint.config(
     },
   },
   {
-    ignores: [],
+    ignores: [
+      'node_modules',
+      '.svelte-kit',
+      'static',
+      'eslint.config.js',
+      'lint-staged.config.js',
+      'prettier.config.js',
+      'svelte.config.js',
+      'vite.config.js',
+    ],
   },
 );

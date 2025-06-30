@@ -1,17 +1,8 @@
-import { sveltePreprocess } from 'svelte-preprocess';
 import adapter from '@sveltejs/adapter-static';
 import path from 'path';
 
-const preprocess = [
-  sveltePreprocess({
-    postcss: true,
-    preserve: ['ld+json'],
-  }),
-];
-
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: preprocess,
   kit: {
     adapter: adapter(),
     alias: {
@@ -27,6 +18,7 @@ const config = {
           'self',
           'ws://localhost:3000',
           'https://api.spotify.com',
+          'https://accounts.spotify.com',
         ],
         'img-src': ['self', 'data:', 'blob:'],
         'style-src': ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],

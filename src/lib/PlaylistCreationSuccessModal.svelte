@@ -9,7 +9,6 @@
   }
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <dialog
   bind:this={dialog}
   on:close={() => (showModal = false)}
@@ -17,7 +16,8 @@
     dialog?.close();
   }}
 >
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="p-4" on:click|stopPropagation>
     <h2 class="mb-5 text-3xl font-bold">Success!</h2>
     <p class="mb-3">You sucessfully created your Spotify playlist!</p>
@@ -49,6 +49,11 @@
     border-radius: 0.25em;
     border: none;
     padding: 0;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
   }
 
   dialog::backdrop {
