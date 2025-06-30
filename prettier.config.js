@@ -1,5 +1,4 @@
-/** @type {import('prettier').Config} */
-module.exports = {
+export default {
   singleQuote: true,
   svelteAllowShorthand: true,
   plugins: ['prettier-plugin-svelte', 'prettier-plugin-tailwindcss'],

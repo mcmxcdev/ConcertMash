@@ -55,12 +55,9 @@
 
       return artistSelecton;
     } catch (error) {
-      // Access token expired
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (error.status === 401) {
-        toast('Access token expired.');
-        window.location.reload();
-      }
+      console.error('Error searching artists:', error);
+      toast('Error searching artists. Please try again.');
+      return [];
     }
   };
 
@@ -107,7 +104,7 @@
 
       if (
         liveExclusionCriteria.some((criteria) =>
-          lowercasedTrackName.includes(criteria),
+          lowercasedTrackName.includes(criteria.toLowerCase()),
         )
       ) {
         shouldExcludeTrack = true;
@@ -282,13 +279,7 @@
       playlistCreationPending = false;
       console.error(error);
 
-      // Access token expired
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (error.status === 401) {
-        window.location.reload();
-      } else {
-        toast("Couldn't create playlist. Please try again.");
-      }
+      toast("Couldn't create playlist. Please try again.");
     }
   };
 
@@ -305,7 +296,7 @@
       playlistTitle: '',
       playlistDescription: '',
       playlistVisibility: 'private',
-      songsPerArtist: 'top10-and-most-recent-release',
+      songsPerArtist: 'all',
       albumType: 'both',
       artists: [],
       excludedSongTypes: [
@@ -440,7 +431,7 @@
               <div class="input-label field-required">Songs per artist</div>
               {#if $form.songsPerArtist === 'all'}
                 <div
-                  class="relative mb-3 rounded border border-gray-400 bg-gray-100 px-2 py-1 text-gray-700"
+                  class="relative mb-3 rounded-sm border border-gray-400 bg-gray-100 px-2 py-1 text-gray-700"
                   role="alert"
                 >
                   <span class="block text-xs sm:inline"

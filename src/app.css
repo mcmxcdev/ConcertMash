@@ -1,6 +1,36 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/forms';
+
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  /* --breakpoint-xl: 1280px; */
+  /* --breakpoint-2xl: 1536px; */
+
+  --color-spotify-green: #1db954;
+  --color-spotify-hover-green: #1ed760;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
 
 #svelte {
   @apply flex min-h-screen flex-col;
@@ -15,7 +45,7 @@ body {
 }
 
 .input-field {
-  @apply w-full rounded border border-gray-400 text-gray-700 hover:border-gray-500;
+  @apply w-full rounded-sm border border-gray-400 text-gray-700 hover:border-gray-500;
 }
 
 .form-validation-error {
@@ -23,7 +53,7 @@ body {
 }
 
 .btn-spotify {
-  @apply rounded bg-spotify-green py-4 px-6 text-xl text-white shadow-md;
+  @apply bg-spotify-green rounded-sm px-6 py-4 text-xl text-white shadow-md;
 }
 
 .btn-spotify:hover {
@@ -69,7 +99,7 @@ body {
   height: 150px;
   left: -80px;
   top: -80px;
-  @apply absolute block rounded-full bg-spotify-hover-green;
+  @apply bg-spotify-hover-green absolute block rounded-full;
 }
 
 .blue-dot {
@@ -85,7 +115,7 @@ body {
   height: 150px;
   right: -80px;
   bottom: -80px;
-  @apply absolute block rounded-full bg-spotify-hover-green;
+  @apply bg-spotify-hover-green absolute block rounded-full;
 }
 
 .blue-dot-2 {
