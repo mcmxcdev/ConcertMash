@@ -16,7 +16,7 @@ const config = {
         'script-src': ['self'],
         'connect-src': [
           'self',
-          'ws://localhost:3000',
+          'ws://127.0.0.1:3000',
           'https://api.spotify.com',
           'https://accounts.spotify.com',
         ],

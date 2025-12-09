@@ -1,6 +1,7 @@
 <script>
   import { faGithub } from '@fortawesome/free-brands-svg-icons';
   import Icon from 'svelte-awesome';
+  import { resolve } from '$app/paths';
 </script>
 
 <footer class="border-spotify-green w-full border-t-4 bg-black">
@@ -8,7 +9,7 @@
     <div class="grid w-full grid-cols-3 items-center justify-between gap-3">
       <div class="col-span-3 mx-auto md:col-span-1 md:mx-0">
         <a
-          href="/"
+          href={resolve('/')}
           class="inline-flex items-center text-xl font-semibold text-white"
         >
           <img

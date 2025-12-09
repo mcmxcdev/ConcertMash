@@ -9,9 +9,11 @@
   import { getMe } from '../api';
   import { storedToken, storedUser } from '../stores';
   import SpotifyButton from './SpotifyButton.svelte';
+  import { SvelteURL } from 'svelte/reactivity';
+  import { resolve } from '$app/paths';
 
   const spotifyApi = new SpotifyApi();
-  const authEndpoint = new URL('https://accounts.spotify.com/authorize');
+  const authEndpoint = new SvelteURL('https://accounts.spotify.com/authorize');
   const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
   const redirectUri = import.meta.env.VITE_APP_BASE_URL;
   const scopes =
@@ -233,12 +235,12 @@
         } catch {
           storedToken.set(null);
           storedUser.set(undefined);
-          await goto('/');
+          await goto(resolve('/'));
         }
       } else {
         storedToken.set(null);
         storedUser.set(undefined);
-        await goto('/');
+        await goto(resolve('/'));
       }
     }
   };
@@ -253,6 +255,7 @@
     if (error) {
       console.error('Authorization error:', error);
       // Clean up URL parameters
+      // eslint-disable-next-line svelte/no-navigation-without-resolve
       void goto(globalThis.location.pathname, { replaceState: true });
       return;
     }
@@ -261,6 +264,7 @@
       // Handle authorization callback
       void getToken(code, state);
       // Clean up URL parameters
+      // eslint-disable-next-line svelte/no-navigation-without-resolve
       void goto(globalThis.location.pathname, { replaceState: true });
     } else {
       // Check for existing valid token
