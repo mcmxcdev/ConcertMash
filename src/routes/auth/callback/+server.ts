@@ -48,5 +48,8 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
   };
   setTokenCookies(cookies, data, true);
 
-  redirect(302, '/app');
+  return new Response(null, {
+    status: 302,
+    headers: { Location: new URL('/app', url.origin).href },
+  });
 };
