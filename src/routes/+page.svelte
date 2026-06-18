@@ -5,10 +5,8 @@
   import { toast } from 'svelte-sonner';
 
   import LoginWithSpotify from '$lib/LoginWithSpotify.svelte';
-  import PlaylistCreationForm from '$lib/PlaylistCreationForm.svelte';
 
   export let data: {
-    user: SpotifyApi.CurrentUsersProfileResponse | null;
     oauthError: string | null;
   };
 
@@ -30,8 +28,4 @@
   />
 </svelte:head>
 
-{#if data.user}
-  <PlaylistCreationForm user={data.user} />
-{:else}
-  <LoginWithSpotify />
-{/if}
+<LoginWithSpotify />

@@ -48,5 +48,5 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
   };
   setTokenCookies(cookies, data, true);
 
-  redirect(302, '/');
+  redirect(302, '/app');
 };
