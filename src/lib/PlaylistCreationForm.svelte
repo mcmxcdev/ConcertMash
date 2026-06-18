@@ -16,11 +16,12 @@
     MAXIMUM_OFFSET,
     searchArtists,
   } from '../api';
-  import { storedUser } from '../stores';
   import type { FormFields, SelectValues } from '../utils/types';
   import ImageUpload from './ImageUpload.svelte';
   import RandomFactsOverlay from './RandomFactsOverlay.svelte';
   import PlaylistCreationSuccessModal from './PlaylistCreationSuccessModal.svelte';
+
+  export let user: SpotifyApi.CurrentUsersProfileResponse;
 
   const plimit = pLimit(1);
 
@@ -29,7 +30,7 @@
   let allAlbumUris: string[] = [];
   let allTrackUris: string[] = [];
   let isGenerationDone = false;
-  let playlistCreationPending = false;
+  let isPlaylistCreationPending = false;
 
   const MOST_RECENT_RELEASE_LIMIT = 1;
 
@@ -82,7 +83,7 @@
     // Whenever the selected songs per artist mode is "top10-and-most-recent-release",
     // we need to opt out the recursive behavior based on the limit parameter to avoid fetching more albums than one
     if (albumsFromArtist.next && limit !== MOST_RECENT_RELEASE_LIMIT) {
-      offset = offset + MAXIMUM_OFFSET;
+      offset += MAXIMUM_OFFSET;
       await fetchArtistAlbumsPaginated(artistId, albumType, offset);
     }
 
@@ -159,7 +160,7 @@
     }
 
     if (albumTracks.next) {
-      offset = offset + MAXIMUM_OFFSET;
+      offset += MAXIMUM_OFFSET;
       await fetchAlbumTracksPaginated(albumUri, offset);
     }
 
@@ -214,7 +215,7 @@
 
   const handlePlaylistCreation = async (values: FormFields) => {
     try {
-      playlistCreationPending = true;
+      isPlaylistCreationPending = true;
 
       const artistIds = values.artists.map((artist: SelectValues) => artist.id);
 
@@ -240,8 +241,7 @@
         }
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const createdPlaylist = await createPlaylist($storedUser!, values);
+      const createdPlaylist = await createPlaylist(user, values);
       playlistId = createdPlaylist.id;
 
       if (playlistImage) {
@@ -274,9 +274,9 @@
       allAlbumUris = [];
       allTrackUris = [];
       isGenerationDone = true;
-      playlistCreationPending = false;
+      isPlaylistCreationPending = false;
     } catch (error) {
-      playlistCreationPending = false;
+      isPlaylistCreationPending = false;
       console.error(error);
 
       toast("Couldn't create playlist. Please try again.");
@@ -365,7 +365,7 @@
   };
 </script>
 
-{#if playlistCreationPending}
+{#if isPlaylistCreationPending}
   <RandomFactsOverlay />
 {/if}
 

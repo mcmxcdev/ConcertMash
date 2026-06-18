@@ -6,11 +6,13 @@
   import BreakpointHelper from '$lib/BreakpointHelper.svelte';
   import Footer from '$lib/Footer.svelte';
   import Nav from '$lib/Nav.svelte';
+
+  export let data: { user: SpotifyApi.CurrentUsersProfileResponse | null };
 </script>
 
 <BreakpointHelper />
 
-<Nav />
+<Nav user={data.user} />
 
 <main class="flex-1">
   <slot />

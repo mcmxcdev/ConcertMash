@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-netlify';
 import path from 'path';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,12 +14,7 @@ const config = {
       directives: {
         'default-src': ['none'],
         'script-src': ['self'],
-        'connect-src': [
-          'self',
-          'ws://127.0.0.1:3000',
-          'https://api.spotify.com',
-          'https://accounts.spotify.com',
-        ],
+        'connect-src': ['self', 'ws://127.0.0.1:3000'],
         'img-src': ['self', 'data:', 'blob:'],
         'style-src': ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],
         'base-uri': ['self'],
