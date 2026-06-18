@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-node';
+import adapter from '@sveltejs/adapter-netlify';
 import path from 'path';
 
 /** @type {import('@sveltejs/kit').Config} */
