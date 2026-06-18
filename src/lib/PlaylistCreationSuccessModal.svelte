@@ -1,4 +1,5 @@
 <script lang="ts">
+  // eslint-disable-next-line unicorn/consistent-boolean-name
   export let showModal: boolean;
   export let playlistId: string;
 
@@ -70,10 +71,10 @@
 
   @keyframes zoom {
     from {
-      transform: scale(0.95);
+      transform: translate(-50%, -50%) scale(0.95);
     }
     to {
-      transform: scale(1);
+      transform: translate(-50%, -50%) scale(1);
     }
   }
 

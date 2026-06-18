@@ -60,6 +60,11 @@ export default tseslint.config(
       'unicorn/no-null': 'off',
       'unicorn/prevent-abbreviations': 'off',
       'unicorn/no-array-reduce': 'off',
+      'unicorn/no-declarations-before-early-exit': 'off',
+      'unicorn/no-top-level-assignment-in-function': 'off',
+      'unicorn/no-unused-array-method-return': 'off',
+      'unicorn/no-return-array-push': 'off',
+      'unicorn/max-nested-calls': 'off',
       //
       // eslint-plugin-promise
       //

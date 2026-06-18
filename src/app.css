@@ -40,6 +40,10 @@ body {
   font-family: 'Montserrat', sans-serif;
 }
 
+button {
+  @apply cursor-pointer;
+}
+
 .input-label {
   @apply mb-2 text-sm font-bold tracking-wide text-gray-700;
 }
