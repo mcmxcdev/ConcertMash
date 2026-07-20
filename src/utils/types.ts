@@ -8,10 +8,6 @@ export type FormFields = {
   albumType: 'album' | 'single ' | 'both';
   artists: SelectValues[];
   excludedSongTypes: (
-    | 'live'
-    | 'instrumentals'
-    | 'commentary'
-    | 'demo'
-    | 'remix'
+    'live' | 'instrumentals' | 'commentary' | 'demo' | 'remix'
   )[];
 };

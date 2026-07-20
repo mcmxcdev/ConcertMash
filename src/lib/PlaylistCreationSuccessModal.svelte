@@ -19,17 +19,27 @@
 >
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="p-4" on:click|stopPropagation>
-    <h2 class="mb-5 text-3xl font-bold">Success!</h2>
-    <p class="mb-3">You sucessfully created your Spotify playlist!</p>
-    <p class="mb-3">
+  <div class="p-6" on:click|stopPropagation>
+    <div
+      class="bg-spotify-green/15 mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full text-2xl"
+    >
+      🎉
+    </div>
+    <h2 class="mb-4 text-3xl font-extrabold tracking-tight text-white">
+      Success!
+    </h2>
+    <p class="text-muted mb-2">
+      You successfully created your Spotify playlist!
+    </p>
+    <p class="text-muted mb-4">
       You can find the new playlist at the top of the playlist sidebar.
     </p>
     <a
       href={`https://open.spotify.com/playlist/${playlistId}`}
       target="_blank"
       rel="noopener noreferrer"
-      class="mb-6 block underline">Open the Spotify app to listen</a
+      class="text-spotify-hover-green mb-6 block font-semibold underline underline-offset-4"
+      >Open the Spotify app to listen</a
     >
 
     <div class="flex justify-end">
@@ -47,9 +57,12 @@
 <style>
   dialog {
     max-width: 32em;
-    border-radius: 0.25em;
-    border: none;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #1c1c20;
+    color: #ffffff;
     padding: 0;
+    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
     position: fixed;
     top: 50%;
     left: 50%;
@@ -58,7 +71,8 @@
   }
 
   dialog::backdrop {
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
   }
 
   dialog[open] {

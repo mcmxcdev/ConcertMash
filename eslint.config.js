@@ -65,6 +65,7 @@ export default tseslint.config(
       'unicorn/no-unused-array-method-return': 'off',
       'unicorn/no-return-array-push': 'off',
       'unicorn/max-nested-calls': 'off',
+      "unicorn/name-replacements": "off",
       //
       // eslint-plugin-promise
       //

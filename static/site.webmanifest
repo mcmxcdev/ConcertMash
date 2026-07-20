@@ -1,0 +1,17 @@
+{
+  "name": "ConcertMash",
+  "short_name": "ConcertMash",
+  "description": "Instantly build a Spotify playlist for your next concert or festival.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}
