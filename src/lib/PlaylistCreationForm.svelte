@@ -82,7 +82,7 @@
 
     // Whenever the selected songs per artist mode is "top10-and-most-recent-release",
     // we need to opt out the recursive behavior based on the limit parameter to avoid fetching more albums than one
-    if (albumsFromArtist.next && limit !== MOST_RECENT_RELEASE_LIMIT) {
+    if (limit !== MOST_RECENT_RELEASE_LIMIT && albumsFromArtist.next) {
       offset += MAXIMUM_OFFSET;
       await fetchArtistAlbumsPaginated(artistId, albumType, offset);
     }
@@ -351,11 +351,21 @@
   const handleSelect = (event: Event & { detail: SelectValues }) => {
     // Open issue for $errors not updating without handleChange
     // See: https://github.com/tjinauyeung/svelte-forms-lib/issues/110
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, svelte/require-store-reactive-access
+    if (!(form && errors)) {
+      return;
+    }
+
     form.set({ ...$form, artists: [...$form.artists, event.detail] });
     errors.set({ ...$errors, artists: '' });
   };
 
   const handleClear = (event: Event & { detail: SelectValues }) => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, svelte/require-store-reactive-access
+    if (!(form && errors)) {
+      return;
+    }
+
     const filteredArtists = $form.artists.filter(
       (artist) => artist.id !== event.detail.id,
     );
@@ -369,17 +379,23 @@
   <RandomFactsOverlay />
 {/if}
 
-<section class="img-bg">
-  <div class="gradient-bg">
-    <div class="container mx-auto px-3 py-10">
-      <div class="rounded-md bg-white px-4 py-8 md:p-12">
+<section class="img-bg flex-1">
+  <div class="gradient-bg flex-1 py-14">
+    <div class="container mx-auto px-3">
+      <div
+        class="bg-surface rounded-2xl border border-white/10 px-5 py-8 shadow-2xl md:p-12"
+      >
         <form method="post" on:submit={handleSubmit} name="playlistCreation">
-          <h2 class="mb-10 text-3xl font-bold">Playlist Info</h2>
+          <span class="eyebrow">Create playlist</span>
+          <h2 class="mb-10 text-3xl font-extrabold tracking-tight text-white">
+            Playlist info
+          </h2>
 
           <div class="grid grid-cols-3 gap-8">
             <div class="col-span-3 row-span-6 lg:col-span-1">
               <div class="input-label">
-                Playlist image <span class="text-xs text-gray-400"
+                Playlist image <span
+                  class="text-xs font-normal text-neutral-500"
                   >(jpeg, maximum 256kb)</span
                 >
               </div>
@@ -431,7 +447,7 @@
               <div class="input-label field-required">Songs per artist</div>
               {#if $form.songsPerArtist === 'all'}
                 <div
-                  class="relative mb-3 rounded-sm border border-gray-400 bg-gray-100 px-2 py-1 text-gray-700"
+                  class="relative mb-3 rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-amber-200"
                   role="alert"
                 >
                   <span class="block text-xs sm:inline"
@@ -588,7 +604,7 @@
               </label>
             </div>
 
-            <div class="col-span-3">
+            <div class="col-span-3" id="artist-select">
               <label for="artists" class="input-label field-required"
                 >Selected artists
               </label>
@@ -627,10 +643,78 @@
 <PlaylistCreationSuccessModal bind:showModal={isGenerationDone} {playlistId} />
 
 <style>
+  /*
+    svelte-select reads its theme from CSS custom properties on the
+    `.svelte-select` container. Defining them on the wrapping element lets
+    them cascade down to the container (setting them on the inner `#artists`
+    input would never reach the parent).
+  */
+  :global(#artist-select) {
+    --background: rgba(255, 255, 255, 0.05);
+    --border: 1px solid rgba(255, 255, 255, 0.1);
+    --border-hover: 1px solid rgba(255, 255, 255, 0.25);
+    --border-focused: 1px solid #1db954;
+    --border-radius: 0.5rem;
+    --input-color: #ffffff;
+    --placeholder-color: #737373;
+    --clear-icon-color: #a3a3a3;
+    --chevron-color: #a3a3a3;
+
+    --list-background: #1c1c20;
+    --list-border: 1px solid rgba(255, 255, 255, 0.1);
+    --list-border-radius: 0.5rem;
+    --list-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.7);
+    --item-color: #e5e5e5;
+    --item-hover-bg: rgba(30, 215, 96, 0.15);
+    --item-hover-color: #ffffff;
+    --item-is-active-bg: #1db954;
+    --item-is-active-color: #000000;
+
+    --multi-item-bg: rgba(255, 255, 255, 0.1);
+    --multi-item-color: #ffffff;
+    --multi-item-border: 1px solid rgba(255, 255, 255, 0.15);
+    --multi-item-clear-icon-color: #d4d4d4;
+    --multi-item-outline: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
   :global(#artists) {
     /* Remove box shadow from @tailwindcss/forms on svelte-select */
     box-shadow: none;
     /* Fix ios zoom-in behavior */
     font-size: 16px;
+  }
+
+  /*
+    Belt-and-braces explicit overrides in case a custom property is renamed
+    across svelte-select versions — keeps the chips and typed text readable.
+  */
+  :global(#artist-select .svelte-select) {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  :global(#artist-select .svelte-select input) {
+    color: #ffffff;
+  }
+
+  :global(#artist-select .multi-item) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  :global(#artist-select .multi-item-text) {
+    color: #ffffff;
+  }
+
+  /*
+    svelte-select renders the list container whenever it's open, even with no
+    results and `hideEmptyState` on (Select.svelte only gates on `listOpen`).
+    That leaves an empty floating box on focus/typing-with-no-matches. Hide the
+    list unless it actually holds result items.
+  */
+  :global(#artist-select .svelte-select-list:not(:has(.list-item))) {
+    display: none;
   }
 </style>

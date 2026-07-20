@@ -4,7 +4,7 @@
   import { resolve } from '$app/paths';
 </script>
 
-<footer class="border-spotify-green w-full border-t-4 bg-black">
+<footer class="w-full border-t border-white/10 bg-black">
   <div class="container mx-auto flex items-center justify-between px-3 py-10">
     <div class="grid w-full grid-cols-3 items-center justify-between gap-3">
       <div class="col-span-3 mx-auto md:col-span-1 md:mx-0">

@@ -14,6 +14,7 @@ const config = {
       directives: {
         'default-src': ['none'],
         'script-src': ['self'],
+        'manifest-src': ['self'],
         'connect-src': ['self', 'ws://127.0.0.1:3000'],
         'img-src': ['self', 'data:', 'blob:'],
         'style-src': ['self', 'unsafe-inline', 'https://fonts.googleapis.com'],

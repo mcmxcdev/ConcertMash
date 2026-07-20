@@ -12,15 +12,17 @@
 
   --color-spotify-green: #1db954;
   --color-spotify-hover-green: #1ed760;
+
+  /* Spotify-native dark surfaces */
+  --color-ink: #0a0a0c;
+  --color-surface: #161618;
+  --color-surface-2: #1c1c20;
+  --color-muted: #b3b3b3;
 }
 
 /*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
+  Dark theme baseline. Default border color follows the surface lines instead
+  of the old light gray so bare-bordered elements read correctly on dark.
 */
 @layer base {
   *,
@@ -28,7 +30,7 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -36,41 +38,111 @@
   @apply flex min-h-screen flex-col;
 }
 
+html {
+  color-scheme: dark;
+}
+
 body {
   font-family: 'Montserrat', sans-serif;
+  @apply bg-ink text-white antialiased;
+}
+
+::selection {
+  background: rgba(30, 215, 96, 0.3);
 }
 
 button {
   @apply cursor-pointer;
 }
 
+/*
+  @tailwindcss/forms paints the checked state with `background-color:
+  currentColor`, so the checkbox/radio `color` drives the fill. Set it to the
+  Spotify green (accent-color covers native, un-plugin-styled controls too).
+*/
+input[type='radio'],
+input[type='checkbox'] {
+  color: var(--color-spotify-green);
+  accent-color: var(--color-spotify-hover-green);
+}
+
+input[type='radio']:focus,
+input[type='checkbox']:focus {
+  --tw-ring-color: var(--color-spotify-hover-green);
+}
+
+/* Section eyebrow label */
+.eyebrow {
+  @apply mb-3 inline-block text-xs font-bold tracking-[0.2em] text-spotify-hover-green uppercase;
+}
+
 .input-label {
-  @apply mb-2 text-sm font-bold tracking-wide text-gray-700;
+  @apply mb-2 block text-sm font-semibold tracking-wide text-neutral-300;
 }
 
 .input-field {
-  @apply w-full rounded-sm border border-gray-400 text-gray-700 hover:border-gray-500;
+  @apply w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white transition placeholder:text-neutral-500 hover:border-white/25;
+}
+
+.input-field:focus {
+  @apply border-spotify-green outline-none;
+  box-shadow: 0 0 0 3px rgba(30, 215, 96, 0.18);
 }
 
 .form-validation-error {
-  @apply text-red-600;
+  @apply mt-1 block text-sm text-red-400;
 }
 
+/* Spotify-style pill CTA: bright green, black bold label, subtle glow + lift */
 .btn-spotify {
-  @apply bg-spotify-green rounded-sm px-6 py-4 text-xl text-white shadow-md;
+  @apply inline-flex items-center justify-center rounded-full bg-spotify-green px-8 py-4 text-lg font-bold text-black transition duration-150 ease-out;
+  box-shadow: 0 10px 34px -10px rgba(30, 215, 96, 0.55);
 }
 
 .btn-spotify:hover {
   @apply bg-spotify-hover-green;
+  transform: scale(1.04);
 }
 
+.btn-spotify:active {
+  transform: scale(0.99);
+}
+
+.btn-spotify:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px var(--color-ink),
+    0 0 0 6px var(--color-spotify-hover-green);
+}
+
+/* Elevated dark card with hover lift */
+.surface-card {
+  @apply relative overflow-hidden rounded-2xl border border-white/10 bg-surface;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.surface-card:hover {
+  @apply border-white/20 bg-surface-2;
+  transform: translateY(-4px);
+}
+
+/* Hero: dark, moody overlay on the concert photo with a green stage glow */
 .gradient-bg {
-  background: radial-gradient(
-    circle,
-    rgba(41, 65, 171, 0.75) 0%,
-    rgba(37, 114, 188, 0.75) 33.78%,
-    rgba(30, 215, 96, 0.75) 100%
-  );
+  background:
+    radial-gradient(
+      120% 90% at 50% -10%,
+      rgba(30, 215, 96, 0.22) 0%,
+      rgba(10, 10, 12, 0) 55%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(8, 8, 10, 0.72) 0%,
+      rgba(8, 8, 10, 0.82) 45%,
+      var(--color-ink) 100%
+    );
 }
 
 .img-bg {
@@ -81,11 +153,11 @@ button {
 
 .field-required:after {
   content: ' *';
-  @apply text-red-600;
+  @apply text-spotify-hover-green;
 }
 
 .loader {
-  border-top-color: #1db954;
+  border-top-color: #1ed760;
   animation: spinner 1.5s linear infinite;
 }
 
@@ -98,34 +170,39 @@ button {
   }
 }
 
+/* Soft blurred stage-light glows behind the step cards */
 .green-dot {
-  width: 150px;
-  height: 150px;
-  left: -80px;
-  top: -80px;
-  @apply bg-spotify-hover-green absolute block rounded-full;
+  width: 180px;
+  height: 180px;
+  left: -90px;
+  top: -90px;
+  filter: blur(44px);
+  @apply pointer-events-none absolute block rounded-full bg-spotify-green/40;
 }
 
 .blue-dot {
-  width: 100px;
-  height: 100px;
-  left: 30px;
-  top: -75px;
-  @apply absolute block rounded-full bg-blue-500;
+  width: 120px;
+  height: 120px;
+  left: 40px;
+  top: -80px;
+  filter: blur(40px);
+  @apply pointer-events-none absolute block rounded-full bg-emerald-400/25;
 }
 
 .green-dot-2 {
-  width: 150px;
-  height: 150px;
-  right: -80px;
-  bottom: -80px;
-  @apply bg-spotify-hover-green absolute block rounded-full;
+  width: 180px;
+  height: 180px;
+  right: -90px;
+  bottom: -90px;
+  filter: blur(44px);
+  @apply pointer-events-none absolute block rounded-full bg-spotify-green/40;
 }
 
 .blue-dot-2 {
-  width: 100px;
-  height: 100px;
-  right: 30px;
-  bottom: -75px;
-  @apply absolute block rounded-full bg-blue-500;
+  width: 120px;
+  height: 120px;
+  right: 40px;
+  bottom: -80px;
+  filter: blur(40px);
+  @apply pointer-events-none absolute block rounded-full bg-emerald-400/25;
 }

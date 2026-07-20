@@ -14,10 +14,10 @@
 
 <Nav user={data.user} />
 
-<main class="flex-1">
+<main class="flex flex-1 flex-col">
   <slot />
 </main>
 
 <Footer />
 
-<Toaster duration={3000} />
+<Toaster theme="dark" duration={3000} />

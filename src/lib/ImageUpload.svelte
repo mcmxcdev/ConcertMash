@@ -51,4 +51,38 @@
 <style global>
   @import 'filepond/dist/filepond.css';
   @import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+
+  /* Dark theme for FilePond drop area (global: FilePond injects this DOM) */
+  /*
+    FilePond builds its panel from three stacked sub-panels (top/center/bottom)
+    that all share `.filepond--panel-root`. Bordering that class draws a line
+    between the sub-panels (the "nested border" look), so the single border,
+    radius and fill live on the outer `.filepond--root` instead, with the
+    sub-panels left transparent and borderless.
+  */
+  :global(.filepond--root) {
+    margin-bottom: 0;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  :global(.filepond--panel-root) {
+    background-color: transparent;
+    border: none;
+  }
+
+  :global(.filepond--drop-label) {
+    color: #a3a3a3;
+  }
+
+  :global(.filepond--label-action) {
+    text-decoration-color: #1ed760;
+    color: #1ed760;
+  }
+
+  :global(.filepond--drip-blob) {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
 </style>

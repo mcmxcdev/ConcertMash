@@ -17,6 +17,7 @@
 
 <svelte:head>
   <title>Create Playlist | ConcertMash</title>
+  <meta name="robots" content="noindex" />
 </svelte:head>
 
 <PlaylistCreationForm user={data.user} />
