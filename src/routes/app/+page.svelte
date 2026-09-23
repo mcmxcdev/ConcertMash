@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import { replaceState } from '$app/navigation';
   import { resolve } from '$app/paths';
   import PlaylistCreationForm from '$lib/PlaylistCreationForm.svelte';
@@ -8,11 +8,14 @@
     user: SpotifyApi.CurrentUsersProfileResponse;
   };
 
-  onMount(() => {
-    if (new URL(globalThis.location.href).searchParams.has('code')) {
+  // Clean up OAuth parameters from URL if they somehow made it here
+  // This is a fallback to ensure clean URLs after OAuth callback
+  if (browser && typeof globalThis !== 'undefined') {
+    const url = new URL(globalThis.location.href);
+    if (url.searchParams.has('code') || url.searchParams.has('state')) {
       replaceState(resolve('/app'), {});
     }
-  });
+  }
 </script>
 
 <svelte:head>

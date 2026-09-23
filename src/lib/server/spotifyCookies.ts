@@ -50,10 +50,7 @@ const refreshTokenFromSpotify = async (
 
     if (!response.ok) {
       const data = (await response.json()) as { error?: string };
-      if (data.error === 'invalid_grant') {
-        return { status: 'invalid_grant' };
-      }
-      return { status: 'error' };
+      return ({ status: data.error === 'invalid_grant' ? 'invalid_grant' : 'error' });
     }
 
     return {
