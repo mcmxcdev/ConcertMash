@@ -10,11 +10,15 @@ export const SITE_TITLE =
 export const SITE_DESCRIPTION =
   'ConcertMash turns your concert or festival line-up into a ready-to-play Spotify playlist in seconds. Enter the artists, pick top songs or full discographies, and get a playlist automatically.';
 
-/** 2332×2008 source image; social platforms crop as needed. */
+/**
+2332×2008 source image; social platforms crop as needed.
+*/
 export const OG_IMAGE = `${SITE_URL}/concertmash.png`;
 export const OG_IMAGE_WIDTH = 2332;
 export const OG_IMAGE_HEIGHT = 2008;
 
-/** Absolute URL helper for canonical / og:url tags. */
+/**
+Absolute URL helper for canonical / og:url tags.
+*/
 export const canonical = (path = '/') =>
   path === '/' ? `${SITE_URL}/` : `${SITE_URL}/${path.replace(/^\/+/, '')}`;

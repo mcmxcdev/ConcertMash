@@ -173,33 +173,23 @@
     offset = 0,
     limit = MAXIMUM_LIMIT,
   ) => {
-    const throttledArtistAlbumRequests: Promise<string[]>[] = [];
-    artistIds.map((artistId) => {
-      throttledArtistAlbumRequests.push(
-        plimit(() =>
-          fetchArtistAlbumsPaginated(artistId, albumType, offset, limit),
-        ),
-      );
-    });
+    const throttledArtistAlbumRequests = Array.from(artistIds, (artistId) =>
+      plimit(() =>
+        fetchArtistAlbumsPaginated(artistId, albumType, offset, limit),
+      ),
+    );
     await Promise.all(throttledArtistAlbumRequests);
 
-    const throttledAlbumTracksRequests: Promise<string[]>[] = [];
-    allAlbumUris.map((albumUri) => {
-      throttledAlbumTracksRequests.push(
-        plimit(() => fetchAlbumTracksPaginated(albumUri)),
-      );
-    });
+    const throttledAlbumTracksRequests = Array.from(allAlbumUris, (albumUri) =>
+      plimit(() => fetchAlbumTracksPaginated(albumUri)),
+    );
     await Promise.all(throttledAlbumTracksRequests);
   };
 
   const fetchArtistTop10Songs = async (artistIds: string[]) => {
-    const throttledArtistTopTracksRequests: Promise<SpotifyApi.ArtistsTopTracksResponse>[] =
-      [];
-    artistIds.map((artistId) => {
-      throttledArtistTopTracksRequests.push(
-        plimit(() => getArtistTopTracks(artistId)),
-      );
-    });
+    const throttledArtistTopTracksRequests = Array.from(artistIds, (artistId) =>
+      plimit(() => getArtistTopTracks(artistId)),
+    );
 
     const allArtistTopTracks: SpotifyApi.ArtistsTopTracksResponse[] =
       await Promise.all(throttledArtistTopTracksRequests);
@@ -259,13 +249,9 @@
         );
       }
 
-      const throttledAddTracksToPlaylistRequests: Promise<SpotifyApi.AddTracksToPlaylistResponse>[] =
-        [];
-
-      batchedTrackUris.map((trackUris) =>
-        throttledAddTracksToPlaylistRequests.push(
-          plimit(() => addTracksToPlaylist(playlistId, trackUris)),
-        ),
+      const throttledAddTracksToPlaylistRequests = Array.from(
+        batchedTrackUris,
+        (trackUris) => plimit(() => addTracksToPlaylist(playlistId, trackUris)),
       );
       await Promise.all(throttledAddTracksToPlaylistRequests);
 
@@ -348,7 +334,9 @@
     },
   });
 
-  const handleSelect = (event: Event & { detail: SelectValues }) => {
+  let isArtistSelectFocused = false;
+
+  const handleArtistsChange = () => {
     // Open issue for $errors not updating without handleChange
     // See: https://github.com/tjinauyeung/svelte-forms-lib/issues/110
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, svelte/require-store-reactive-access
@@ -356,22 +344,17 @@
       return;
     }
 
-    form.set({ ...$form, artists: [...$form.artists, event.detail] });
     errors.set({ ...$errors, artists: '' });
-  };
 
-  const handleClear = (event: Event & { detail: SelectValues }) => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, svelte/require-store-reactive-access
-    if (!(form && errors)) {
-      return;
-    }
-
-    const filteredArtists = $form.artists.filter(
-      (artist) => artist.id !== event.detail.id,
-    );
-
-    form.set({ ...$form, artists: filteredArtists });
-    errors.set({ ...$errors, artists: '' });
+    // svelte-select's async loadOptions re-fires on the filterText reset
+    // that follows every select/clear, and its resolution can mark the
+    // control unfocused even though the DOM input is still focused - which
+    // breaks Backspace/Delete for removing chips. Restore focus once that
+    // debounced reload has settled.
+    setTimeout(() => {
+      isArtistSelectFocused = true;
+      document.querySelector<HTMLInputElement>('#artists')?.focus();
+    }, 350);
   };
 </script>
 
@@ -610,10 +593,10 @@
               </label>
               <Select
                 id="artists"
-                value={$form.artists}
+                bind:value={$form.artists}
+                bind:focused={isArtistSelectFocused}
                 loadOptions={handleSearchArtist}
-                on:select={handleSelect}
-                on:clear={handleClear}
+                onchange={handleArtistsChange}
                 multiple
                 hasError={$errors.artists.length > 0}
                 placeholder="Coldplay"
